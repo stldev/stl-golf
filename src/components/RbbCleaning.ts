@@ -12,7 +12,7 @@ import { getDatabase, ref, onValue } from 'firebase/database';
 
 @customElement('rbb-cleaning')
 export class RbbCleaning extends LitElement {
-  @property({ type: String }) title = 'RBB-Cleaning';
+  @property({ type: String }) title = 'Woodchoppers';
 
   @property({ type: Boolean }) hasAuth = false;
 
