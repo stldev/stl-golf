@@ -16,6 +16,8 @@ export class RbbCleaning extends LitElement {
 
   @property({ type: Boolean }) hasAuth = false;
 
+  @property({ type: Boolean }) authLoading = false;
+
   @property({ type: String }) userEmail = '';
 
   @query('#loginForm') loginFormEle: HTMLDivElement;
@@ -72,9 +74,10 @@ export class RbbCleaning extends LitElement {
   `;
 
   firstUpdated() {
+    this.authLoading = true;
     getAuth().onAuthStateChanged(user => {
       console.log('onAuthStateChanged-user', user);
-
+      this.authLoading = false;
       if (user?.email) {
         this.userEmail = user.email;
         this.hasAuth = true;
@@ -84,7 +87,7 @@ export class RbbCleaning extends LitElement {
     });
 
     // const today = new Date().toISOString().split('T')[0];
-    const today = '2022-07-27';  // TESTING
+    const today = '2022-07-27'; // TESTING
 
     const rbbCleaningDataRef = ref(getDatabase(), `/${today}`);
     onValue(rbbCleaningDataRef, snapshot => {
@@ -151,11 +154,16 @@ export class RbbCleaning extends LitElement {
 
   private authDisplay() {
     if (this.hasAuth) {
-      const teamName = this.userEmail.replace('woodchoppers.golf+', '').replace('@gmail.com', '').toUpperCase();
-      return html`${teamName}
-       &nbsp;&nbsp;&nbsp; <button type="button" @click="${this.signMeOut}">signOut</button>`;
+      const teamName = this.userEmail
+        .replace('woodchoppers.golf+', '')
+        .replace('@gmail.com', '')
+        .toUpperCase();
+      return html`${teamName} &nbsp;&nbsp;&nbsp;
+        <button type="button" @click="${this.signMeOut}">signOut</button>`;
     }
-    return html`anonymous`;
+    if (this.authLoading) return html`loading...`;
+
+    return html`Welcome!`;
   }
 
   render() {
@@ -167,9 +175,9 @@ export class RbbCleaning extends LitElement {
           <div id="loginForm" style="display: none">
             <p id="errorMessage" style="color:red; display: none;">Error</p>
             <select name="teams" id="team-select">
-                <option value="">--Select your team--</option>
-                <option value="woodchoppers.golf+team7@gmail.com">Team 7</option>
-                <option value="woodchoppers.golf+team6@gmail.com">Team 6</option>       
+              <option value="">--Select your team--</option>
+              <option value="woodchoppers.golf+team7@gmail.com">Team 7</option>
+              <option value="woodchoppers.golf+team6@gmail.com">Team 6</option>
             </select>
             <button type="button" @click="${this.doUserLogin}">
               doUserLogin
