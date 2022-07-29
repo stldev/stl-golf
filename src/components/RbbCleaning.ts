@@ -24,9 +24,7 @@ export class RbbCleaning extends LitElement {
 
   @query('#itemsSection ol') itemsSectionOL: HTMLOListElement;
 
-  @query('#userEmail') emailEle: HTMLInputElement;
-
-  @query('#userPass') passwordEle: HTMLInputElement;
+  @query('#team-select') emailEle: HTMLInputElement;
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
 
@@ -85,9 +83,12 @@ export class RbbCleaning extends LitElement {
       }
     });
 
-    const rbbCleaningDataRef = ref(getDatabase(), '/data');
+    // const today = new Date().toISOString().split('T')[0];
+    const today = '2022-07-27';  // TESTING
+
+    const rbbCleaningDataRef = ref(getDatabase(), `/${today}`);
     onValue(rbbCleaningDataRef, snapshot => {
-      console.log('database-value-snapshot-----', snapshot);
+      // console.log('database-value-snapshot-----', snapshot);
       console.log(snapshot.val());
     });
   }
@@ -114,7 +115,7 @@ export class RbbCleaning extends LitElement {
     const signInResult: UserCredential = await signInWithEmailAndPassword(
       getAuth(),
       this.emailEle.value,
-      this.passwordEle.value
+      'golfteam7'
     ).catch(err => {
       this.errorMessage.innerHTML = err.message || 'sign in error.';
       this.errorMessage.style.display = 'block';
@@ -126,7 +127,6 @@ export class RbbCleaning extends LitElement {
       const { user } = signInResult;
       console.log('user', user);
       this.emailEle.value = '';
-      this.passwordEle.value = '';
       this.loginFormEle.style.display = 'none';
       this.hasAuth = true;
 
@@ -151,8 +151,9 @@ export class RbbCleaning extends LitElement {
 
   private authDisplay() {
     if (this.hasAuth) {
-      return html`${this.userEmail}
-        <button type="button" @click="${this.signMeOut}">signOut</button>`;
+      const teamName = this.userEmail.replace('woodchoppers.golf+', '').replace('@gmail.com', '').toUpperCase();
+      return html`${teamName}
+       &nbsp;&nbsp;&nbsp; <button type="button" @click="${this.signMeOut}">signOut</button>`;
     }
     return html`anonymous`;
   }
@@ -165,8 +166,11 @@ export class RbbCleaning extends LitElement {
           <h2>${this.authDisplay()}</h2>
           <div id="loginForm" style="display: none">
             <p id="errorMessage" style="color:red; display: none;">Error</p>
-            email: <input id="userEmail" type="email" /> <br />
-            pass: <input id="userPass" type="password" /> <br />
+            <select name="teams" id="team-select">
+                <option value="">--Select your team--</option>
+                <option value="woodchoppers.golf+team7@gmail.com">Team 7</option>
+                <option value="woodchoppers.golf+team6@gmail.com">Team 6</option>       
+            </select>
             <button type="button" @click="${this.doUserLogin}">
               doUserLogin
             </button>
