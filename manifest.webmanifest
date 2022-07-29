@@ -1,0 +1,14 @@
+{
+  "name": "Woodchoppers",
+  "short_name": "woodchoppers",
+  "theme_color": "#3B4438",
+  "icons": [
+    {
+      "src": "google-touch-icon.png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ccc"
+}

@@ -64,3 +64,28 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+## editors
+/.idea
+/.vscode
+
+## system files
+.DS_Store
+
+## npm
+/node_modules/
+/npm-debug.log
+
+## testing
+/coverage/
+
+## temp folders
+/.tmp/
+
+# build
+/_site/
+/public/
+/out-tsc/
+
+storybook-static
+custom-elements.json
