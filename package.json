@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/stldev/stl-golf/issues"
   },
-  "homepage": "https://github.com/stldev/stl-golf#readme"
+  "homepage": "https://github.com/stldev/stl-golf#readme",
+  "dependencies": {
+    "firebase": "^9.9.1"
+  }
 }
