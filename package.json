@@ -1,0 +1,19 @@
+{
+  "name": "stl-golf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run analyze -- --exclude public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stldev/stl-golf.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stldev/stl-golf/issues"
+  },
+  "homepage": "https://github.com/stldev/stl-golf#readme"
+}
