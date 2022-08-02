@@ -117,8 +117,8 @@ export class RbbCleaning extends LitElement {
     this.errorMessage.style.display = 'none';
     const signInResult: UserCredential = await signInWithEmailAndPassword(
       getAuth(),
-      this.emailEle.value,
-      `${process.env.PASSWORD_BASE}7`
+      `woodchoppers.golf+team${this.emailEle.value}@gmail.com`,
+      `${process.env.PASSWORD_BASE}${this.emailEle.value}`
     ).catch(err => {
       this.errorMessage.innerHTML = err.message || 'sign in error.';
       this.errorMessage.style.display = 'block';
@@ -176,8 +176,8 @@ export class RbbCleaning extends LitElement {
             <p id="errorMessage" style="color:red; display: none;">Error</p>
             <select name="teams" id="team-select">
               <option value="">--Select your team--</option>
-              <option value="woodchoppers.golf+team7@gmail.com">Team 7</option>
-              <option value="woodchoppers.golf+team6@gmail.com">Team 6</option>
+              <option value="7">Team 7</option>
+              <option value="6">Team 6</option>
             </select>
             <button type="button" @click="${this.doUserLogin}">
               doUserLogin
