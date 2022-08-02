@@ -118,7 +118,7 @@ export class RbbCleaning extends LitElement {
     const signInResult: UserCredential = await signInWithEmailAndPassword(
       getAuth(),
       this.emailEle.value,
-      'golfteam7'
+      `${process.env.PASSWORD_BASE}7`
     ).catch(err => {
       this.errorMessage.innerHTML = err.message || 'sign in error.';
       this.errorMessage.style.display = 'block';

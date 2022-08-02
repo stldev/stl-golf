@@ -6,6 +6,8 @@ import { terser } from 'rollup-plugin-terser';
 import { generateSW } from 'rollup-plugin-workbox';
 import copy from 'rollup-plugin-copy';
 import path from 'path';
+import replace from '@rollup/plugin-replace';
+import 'dotenv/config';
 
 export default {
   input: 'index.html',
@@ -19,6 +21,11 @@ export default {
   preserveEntrySignatures: false,
 
   plugins: [
+    replace({
+      'process.env.PASSWORD_BASE': JSON.stringify(
+        `${process.env.PASSWORD_BASE}`
+      ),
+    }),
     copy({
       targets: [
         { src: 'manifest.webmanifest', dest: './public' },
