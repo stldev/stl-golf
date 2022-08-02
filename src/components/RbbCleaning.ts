@@ -74,6 +74,10 @@ export class RbbCleaning extends LitElement {
   `;
 
   firstUpdated() {
+    const { currentUser } = getAuth();
+    console.log('currentUser1');
+    console.log(currentUser);
+
     this.authLoading = true;
     getAuth().onAuthStateChanged(user => {
       console.log('onAuthStateChanged-user', user);
