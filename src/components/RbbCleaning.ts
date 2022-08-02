@@ -6,7 +6,7 @@ import {
   signOut,
   UserCredential,
 } from 'firebase/auth';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, set } from 'firebase/database';
 
 // const logo = new URL('../../assets/open-wc-logo.svg', import.meta.url).href;
 
@@ -91,9 +91,10 @@ export class RbbCleaning extends LitElement {
     });
 
     // const today = new Date().toISOString().split('T')[0];
-    const today = '2022-07-27'; // TESTING
+    // const today = '2022-07-27'; // TESTING
 
-    const rbbCleaningDataRef = ref(getDatabase(), `/${today}`);
+    // const rbbCleaningDataRef = ref(getDatabase(), `/${today}`);
+    const rbbCleaningDataRef = ref(getDatabase(), `/team7`);
     onValue(rbbCleaningDataRef, snapshot => {
       // console.log('database-value-snapshot-----', snapshot);
       console.log(snapshot.val());
@@ -149,6 +150,8 @@ export class RbbCleaning extends LitElement {
 
   private addTheItem() {
     this.itemsSectionOL.insertAdjacentHTML('beforeend', '<li>item</li>');
+    const db = getDatabase();
+    set(ref(db, '/team7/2022-07-27/h3'), '1-2');
   }
 
   private async signMeOut() {
