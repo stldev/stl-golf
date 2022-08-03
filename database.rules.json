@@ -1,6 +1,11 @@
 {
   "rules": {
-    ".read": "now < 1661576400000",  // 2022-8-27
-    ".write": "now < 1661576400000",  // 2022-8-27
+    ".read": "auth != null",
+    "team7": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team7@gmail.com')"
+    },
+    "team6": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team6@gmail.com')"
+    }
   }
 }
