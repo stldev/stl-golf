@@ -6,7 +6,10 @@ export class GolfDayHome extends LitElement {
   static styles = [
     css`
       article {
-        text-align: center;
+        margin: 6rem;
+      }
+      li {
+        margin: 1rem;
       }
       header {
         color: red;
@@ -18,9 +21,14 @@ export class GolfDayHome extends LitElement {
     return html`
       <article>
         <header>
-          <h2>Golf day home!.</h2>
+          <h2>All golf days</h2>
         </header>
-        <slot></slot>
+        <ul>
+          <li><a href="golf-day/2022-08-03">2022-08-03</a></li>
+          <li><a href="golf-day/2022-07-27">2022-07-27</a></li>
+          <li><a href="golf-day/2022-07-20">2022-07-20</a></li>
+          <li><a href="golf-day/2022-07-13">2022-07-13</a></li>
+        </ul>
       </article>
     `;
   }

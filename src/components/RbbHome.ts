@@ -6,12 +6,13 @@ import {
   signOut,
   UserCredential,
 } from 'firebase/auth';
-import { getDatabase, ref, onValue, set } from 'firebase/database';
+import { Subscription } from 'rxjs';
+import { storeSvc } from '../store/camera';
 
 // const logo = new URL('../../assets/open-wc-logo.svg', import.meta.url).href;
 
-@customElement('rbb-cleaning')
-export class RbbCleaning extends LitElement {
+@customElement('rbb-home')
+export class RbbHome extends LitElement {
   @property({ type: String }) title = 'Woodchoppers';
 
   @property({ type: Boolean }) hasAuth = false;
@@ -24,11 +25,13 @@ export class RbbCleaning extends LitElement {
 
   @query('#itemsSection') itemsSection: HTMLElement;
 
-  @query('#itemsSection ol') itemsSectionOL: HTMLOListElement;
-
   @query('#team-select') emailEle: HTMLInputElement;
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
+
+  @property({ type: Object }) allSubs = new Subscription();
+
+  private currentUserEmail$ = storeSvc.currentUserEmail$;
 
   static styles = css`
     :host {
@@ -51,7 +54,7 @@ export class RbbCleaning extends LitElement {
     #message,
     #itemsSection {
       background: white;
-      max-width: 370px;
+      max-width: 470px;
       margin: 25px auto 8px;
       padding: 16px 12px;
       border-radius: 3px;
@@ -74,31 +77,23 @@ export class RbbCleaning extends LitElement {
   `;
 
   firstUpdated() {
-    const { currentUser } = getAuth();
-    console.log('currentUser1');
-    console.log(currentUser);
-
     this.authLoading = true;
-    getAuth().onAuthStateChanged(user => {
-      console.log('onAuthStateChanged-user', user);
+    const sub1 = this.currentUserEmail$.subscribe(currentUserEmail => {
       this.authLoading = false;
-      if (user?.email) {
-        this.userEmail = user.email;
+      if (currentUserEmail) {
+        this.userEmail = currentUserEmail;
         this.hasAuth = true;
       } else {
         this.hasAuth = false;
       }
     });
 
-    // const today = new Date().toISOString().split('T')[0];
-    // const today = '2022-07-27'; // TESTING
+    this.allSubs.add(sub1);
+  }
 
-    // const rbbCleaningDataRef = ref(getDatabase(), `/${today}`);
-    const rbbCleaningDataRef = ref(getDatabase(), `/team7`);
-    onValue(rbbCleaningDataRef, snapshot => {
-      // console.log('database-value-snapshot-----', snapshot);
-      console.log(snapshot.val());
-    });
+  disconnectedCallback() {
+    this.allSubs.unsubscribe();
+    console.log(`${this.tagName} destroyed!`);
   }
 
   private handleAuthLoginDisplay() {
@@ -133,25 +128,13 @@ export class RbbCleaning extends LitElement {
 
     if (signInResult?.user) {
       const { user } = signInResult;
-      console.log('user', user);
+      console.log('signInResult-user', user);
       this.emailEle.value = '';
       this.loginFormEle.style.display = 'none';
       this.hasAuth = true;
-
-      const rbbCleaningDataRef = ref(getDatabase(), '/data');
-      onValue(rbbCleaningDataRef, snapshot => {
-        console.log('database-value-snapshot-----222', snapshot);
-        console.log(snapshot.val());
-      });
     } else {
       this.hasAuth = false;
     }
-  }
-
-  private addTheItem() {
-    this.itemsSectionOL.insertAdjacentHTML('beforeend', '<li>item</li>');
-    const db = getDatabase();
-    set(ref(db, '/team7/2022-07-27/h3'), '1-2');
   }
 
   private async signMeOut() {
@@ -192,8 +175,7 @@ export class RbbCleaning extends LitElement {
           </div>
         </section>
         <section id="itemsSection" style="display: none">
-          <button type="button" @click="${this.addTheItem}">Add Item</button>
-          <ol></ol>
+          <h3><a href="/golf-day">Check out all days</a></h3>
         </section>
       </main>
     `;
