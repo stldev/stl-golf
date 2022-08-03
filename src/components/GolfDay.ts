@@ -35,8 +35,11 @@ export class GolfDay extends LitElement {
         color: red;
       }
       table {
-        width: 50%;
+        width: 100%;
         margin: 0 auto;
+      }
+      table td {
+        padding: 0.6rem;
       }
     `,
   ];
@@ -196,7 +199,7 @@ export class GolfDay extends LitElement {
             </td>
           </tr>
           <tr>
-            <td>total:</td>
+            <td>total</td>
             <td id="total-t6-p1"></td>
             <td id="total-t6-p2"></td>
             <td id="total-t7-p1"></td>
