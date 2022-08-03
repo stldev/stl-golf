@@ -1,7 +1,8 @@
-import { ActionResult, Route, Router } from '@vaadin/router';
+import { Route, Router } from '@vaadin/router';
 import './app';
 import { authGuard } from './services/auth-guard';
 
+// https://vaadin.github.io/router/vaadin-router/demo/#vaadin-router-getting-started-demos
 const routes: Route[] = [
   {
     path: '/',
@@ -9,15 +10,14 @@ const routes: Route[] = [
     children: [
       {
         path: 'home',
-        component: 'rbb-cleaning',
+        component: 'rbb-home',
         action: async () => {
-          await import('./components/RbbCleaning');
+          await import('./components/RbbHome');
         },
       },
       {
-        path: 'golf-day-home',
-        component: 'rbb-golf-day-home',
-        action: async () => authGuard as unknown as ActionResult,
+        path: 'golf-day',
+        action: authGuard,
         children: [
           {
             path: '/',
