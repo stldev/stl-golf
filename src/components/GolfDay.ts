@@ -1,7 +1,9 @@
+import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js';
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { router } from '../router';
+import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-golf-day')
 export class GolfDay extends LitElement {
@@ -13,7 +15,18 @@ export class GolfDay extends LitElement {
 
   @property({ type: String }) teamOther = '';
 
+  @query('#ScoresTable tbody') scoresTableEle: HTMLTableElement;
+
+  @query('#total-t6-p1') totalT6P1Ele: HTMLTableElement;
+
+  @query('#total-t6-p2') totalT6P2Ele: HTMLTableElement;
+
+  @query('#total-t7-p1') totalT7P1Ele: HTMLTableElement;
+
+  @query('#total-t7-p2') totalT7P2Ele: HTMLTableElement;
+
   static styles = [
+    mvpCss,
     css`
       article {
         text-align: center;
@@ -28,7 +41,19 @@ export class GolfDay extends LitElement {
     `,
   ];
 
-  firstUpdated() {
+  setTotals(team: string, p1: number, p2: number) {
+    if (team === 'team7') {
+      this.totalT7P1Ele.textContent = p1.toString();
+      this.totalT7P2Ele.textContent = p2.toString();
+    }
+
+    if (team === 'team6') {
+      this.totalT6P1Ele.textContent = p1.toString();
+      this.totalT6P2Ele.textContent = p2.toString();
+    }
+  }
+
+  getAllData() {
     this.team = localStorage
       .getItem('woodchopper-email')
       .replace('woodchoppers.golf+', '')
@@ -41,8 +66,14 @@ export class GolfDay extends LitElement {
     const myTeamToday = ref(getDatabase(), `/${this.team}/${this.day}`);
     onValue(myTeamToday, snapshot => {
       const allData = snapshot.val();
+      let totalP1 = 0;
+      let totalP2 = 0;
       Object.entries(allData).forEach(([hole, scores]) => {
         const bothScores = (scores as any).split('-');
+
+        totalP1 += Number(bothScores[0]);
+        totalP2 += Number(bothScores[1]);
+
         // eslint-disable-next-line prefer-destructuring
         (
           this.shadowRoot?.querySelector(
@@ -56,13 +87,19 @@ export class GolfDay extends LitElement {
           ) as HTMLSelectElement
         ).value = bothScores[1];
       });
+      this.setTotals(this.team, totalP1, totalP2);
     });
 
     const otherTeamToday = ref(getDatabase(), `/${this.teamOther}/${this.day}`);
     onValue(otherTeamToday, snapshot => {
       const allData = snapshot.val();
+      let totalP1 = 0;
+      let totalP2 = 0;
       Object.entries(allData).forEach(([hole, scores]) => {
         const bothScores = (scores as any).split('-');
+        totalP1 += Number(bothScores[0]);
+        totalP2 += Number(bothScores[1]);
+
         // eslint-disable-next-line prefer-destructuring
         (
           this.shadowRoot?.querySelector(
@@ -76,19 +113,50 @@ export class GolfDay extends LitElement {
           ) as HTMLSelectElement
         ).value = bothScores[1];
       });
+      this.setTotals(this.teamOther, totalP1, totalP2);
     });
   }
 
-  // private addTheItem() {
-  //   this.itemsSectionOL.insertAdjacentHTML('beforeend', '<li>item</li>');
-  //   const db = getDatabase();
-  //   set(ref(db, '/team7/2022-07-27/h3'), '1-2');
-  // }
+  firstUpdated() {
+    this.createTable();
+    this.getAllData();
+  }
+
+  private createTable() {
+    const allOptions = Array(11)
+      .fill('')
+      .map((e, i) => {
+        if (i === 0) return '<option value="0" selected>0</option>';
+        return `<option value="${i}">${i}</option>`;
+      });
+
+    const front9Holes = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    let htmlToUse = '';
+
+    front9Holes.forEach(e => {
+      htmlToUse += `<tr>
+      <td>${e}</td>
+      <td><select id="team6-h${e}-p1">${allOptions}</select></td>
+      <td><select id="team6-h${e}-p2">${allOptions}</select></td>
+      <td><select id="team7-h${e}-p1">${allOptions}</select></td>
+      <td><select id="team7-h${e}-p2">${allOptions}</select></td>
+      </tr>`;
+    });
+
+    this.scoresTableEle.insertAdjacentHTML('beforeend', htmlToUse);
+
+    const selectNodes = this.shadowRoot?.querySelectorAll('select');
+    const selectAry = Array.from(selectNodes);
+    selectAry.forEach(ele => {
+      ele.addEventListener('change', evt => this.onChange(evt));
+    });
+  }
 
   // eslint-disable-next-line class-methods-use-this
   private onChange(e: any) {
     const changedProps = e.target.id.split('-');
-
+    // console.log(changedProps);
     // const dayToUse = this.location.params.day;
     const team = changedProps[0];
     const hole = changedProps[1];
@@ -101,7 +169,12 @@ export class GolfDay extends LitElement {
 
     const db = getDatabase();
     // set(ref(db, '/team7/2022-07-27/h3'), '1-2');
-    set(ref(db, `/${team}/${this.day}/${hole}`), `${scoreP1}-${scoreP2}`);
+    set(ref(db, `/${team}/${this.day}/${hole}`), `${scoreP1}-${scoreP2}`).catch(
+      err => {
+        console.log('Firebase-database-ERROR', err);
+        Router.go(`/golf-day/${this.day}`);
+      }
+    );
   }
 
   render() {
@@ -110,7 +183,7 @@ export class GolfDay extends LitElement {
         <header>
           <h2>${this.team} on ${this.day}</h2>
         </header>
-        <table>
+        <table id="ScoresTable">
           <tr>
             <td>Hole</td>
             <td colspan="2">
@@ -123,98 +196,11 @@ export class GolfDay extends LitElement {
             </td>
           </tr>
           <tr>
-            <td>1</td>
-            <td>
-              <select
-                id="team6-h1-p1"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
-            <td>
-              <select
-                id="team6-h1-p2"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
-            <td>
-              <select
-                id="team7-h1-p1"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
-            <td>
-              <select
-                id="team7-h1-p2"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>
-              <select
-                id="team6-h2-p1"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
-            <td>
-              <select
-                id="team6-h2-p2"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
-            <td>
-              <select
-                id="team7-h2-p1"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
-            <td>
-              <select
-                id="team7-h2-p2"
-                @change=${(e: Event) => this.onChange(e)}
-              >
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
-            </td>
+            <td>total:</td>
+            <td id="total-t6-p1"></td>
+            <td id="total-t6-p2"></td>
+            <td id="total-t7-p1"></td>
+            <td id="total-t7-p2"></td>
           </tr>
         </table>
       </article>
