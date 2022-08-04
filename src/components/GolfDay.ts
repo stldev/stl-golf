@@ -163,16 +163,25 @@ export class GolfDay extends LitElement {
     let htmlToUse = '';
 
     const extraHours = 3600000 * 4;
-    const cutoffTime = new Date(
+    const cutoffTimeInFuture = new Date(
       new Date(`${this.day}T23:59:00.000Z`).getTime() + extraHours
     ).getTime();
-    const isDisabled = Date.now() > cutoffTime ? 'disabled' : '';
+    // TODO: put this back in effect after beta testing
+    // const cutoffTimeInPast = new Date(`${this.day}T15:30:00.000Z`).getTime();
+
+    const isDisabledFuture = Date.now() > cutoffTimeInFuture ? 'disabled' : '';
+    // TODO: put this back in effect after beta testing
+    const isDisabledPast = false; // Date.now() < cutoffTimeInPast ? 'disabled' : '';
 
     front9Holes.forEach(e => {
       htmlToUse += `<tr>
       <td>${e}</td>
-      <td><select ${isDisabled} id="${this.team}-h${e}-p1">${allOptions}</select></td>
-      <td><select ${isDisabled} id="${this.team}-h${e}-p2">${allOptions}</select></td>
+      <td><select ${isDisabledFuture || isDisabledPast} id="${
+        this.team
+      }-h${e}-p1">${allOptions}</select></td>
+      <td><select ${isDisabledFuture || isDisabledPast} id="${
+        this.team
+      }-h${e}-p2">${allOptions}</select></td>
       <td><span id="${this.teamOther}-h${e}-p1">0</span></td>
       <td><span id="${this.teamOther}-h${e}-p2">0</span></td>
       </tr>`;
