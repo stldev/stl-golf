@@ -166,8 +166,10 @@ export class RbbHome extends LitElement {
             <p id="errorMessage" style="color:red; display: none;">Error</p>
             <select name="teams" id="team-select">
               <option value="">--Select your team--</option>
-              <option value="7">Team 7</option>
+              <option value="4">Team 4</option>
+              <option value="5">Team 5</option>
               <option value="6">Team 6</option>
+              <option value="7">Team 7</option>
             </select>
             <button type="button" @click="${this.doUserLogin}">
               doUserLogin
