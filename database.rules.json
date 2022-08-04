@@ -1,6 +1,12 @@
 {
   "rules": {
     ".read": "auth != null",
+    "team4": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team4@gmail.com')"
+    },
+    "team5": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team5@gmail.com')"
+    },
     "team7": {
       ".write": "auth.token.email.endsWith('woodchoppers.golf+team7@gmail.com')"
     },
