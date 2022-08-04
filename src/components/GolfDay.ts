@@ -162,11 +162,17 @@ export class GolfDay extends LitElement {
 
     let htmlToUse = '';
 
+    const extraHours = 3600000 * 4;
+    const cutoffTime = new Date(
+      new Date(`${this.day}T23:59:00.000Z`).getTime() + extraHours
+    ).getTime();
+    const isDisabled = Date.now() > cutoffTime ? 'disabled' : '';
+
     front9Holes.forEach(e => {
       htmlToUse += `<tr>
       <td>${e}</td>
-      <td><select id="${this.team}-h${e}-p1">${allOptions}</select></td>
-      <td><select id="${this.team}-h${e}-p2">${allOptions}</select></td>
+      <td><select ${isDisabled} id="${this.team}-h${e}-p1">${allOptions}</select></td>
+      <td><select ${isDisabled} id="${this.team}-h${e}-p2">${allOptions}</select></td>
       <td><span id="${this.teamOther}-h${e}-p1">0</span></td>
       <td><span id="${this.teamOther}-h${e}-p2">0</span></td>
       </tr>`;
