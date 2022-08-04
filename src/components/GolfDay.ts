@@ -17,13 +17,13 @@ export class GolfDay extends LitElement {
 
   @query('#ScoresTable tbody') scoresTableEle: HTMLTableElement;
 
-  @query('#total-t6-p1') totalT6P1Ele: HTMLTableElement;
+  @query('#total-team-p1') totalTeamP1Ele: HTMLTableElement;
 
-  @query('#total-t6-p2') totalT6P2Ele: HTMLTableElement;
+  @query('#total-team-p2') totalTeamP2Ele: HTMLTableElement;
 
-  @query('#total-t7-p1') totalT7P1Ele: HTMLTableElement;
+  @query('#total-teamother-p1') totalTeamOtherP1Ele: HTMLTableElement;
 
-  @query('#total-t7-p2') totalT7P2Ele: HTMLTableElement;
+  @query('#total-teamother-p2') totalTeamOtherP2Ele: HTMLTableElement;
 
   static styles = [
     mvpCss,
@@ -32,43 +32,65 @@ export class GolfDay extends LitElement {
         text-align: center;
       }
       header {
-        color: red;
-      }
-      table {
-        width: 100%;
-        margin: 0 auto;
+        color: blue;
+        padding: 0;
       }
       table td {
         padding: 0.6rem;
+      }
+      table td span {
+        display: inline-block;
+        margin-bottom: 1rem;
+        font-size: large;
       }
     `,
   ];
 
   setTotals(team: string, p1: number, p2: number) {
-    if (team === 'team7') {
-      this.totalT7P1Ele.textContent = p1.toString();
-      this.totalT7P2Ele.textContent = p2.toString();
+    if (team === 'team') {
+      this.totalTeamP1Ele.textContent = p1.toString();
+      this.totalTeamP2Ele.textContent = p2.toString();
     }
 
-    if (team === 'team6') {
-      this.totalT6P1Ele.textContent = p1.toString();
-      this.totalT6P2Ele.textContent = p2.toString();
+    if (team === 'teamOther') {
+      this.totalTeamOtherP1Ele.textContent = p1.toString();
+      this.totalTeamOtherP2Ele.textContent = p2.toString();
     }
   }
 
-  getAllData() {
+  getPairings() {
+    const thisYear = new Date().getFullYear();
+
+    const schedule = ref(getDatabase(), `/${thisYear}-schedule`);
+    onValue(schedule, snapshot => {
+      const allData = snapshot.val() || {};
+
+      const pair = allData[this.day] || {};
+
+      Object.entries(pair).forEach(([teamA, teamB]) => {
+        if (teamA === this.team) this.teamOther = teamB as string;
+        if (teamB === this.team) this.teamOther = teamA as string;
+      });
+
+      this.createTable();
+    });
+  }
+
+  setup() {
     this.team = localStorage
       .getItem('woodchopper-email')
       .replace('woodchoppers.golf+', '')
       .replace('@gmail.com', '');
 
-    this.teamOther = this.team === 'team6' ? 'team7' : 'team6';
-
     this.day = this.location.params.day.toString();
 
+    this.getPairings();
+  }
+
+  getAllData() {
     const myTeamToday = ref(getDatabase(), `/${this.team}/${this.day}`);
     onValue(myTeamToday, snapshot => {
-      const allData = snapshot.val();
+      const allData = snapshot.val() || {};
       let totalP1 = 0;
       let totalP2 = 0;
       Object.entries(allData).forEach(([hole, scores]) => {
@@ -77,52 +99,55 @@ export class GolfDay extends LitElement {
         totalP1 += Number(bothScores[0]);
         totalP2 += Number(bothScores[1]);
 
+        const p1Ele = this.shadowRoot?.querySelector(
+          `#${this.team}-${hole}-p1`
+        ) as HTMLSelectElement;
+
         // eslint-disable-next-line prefer-destructuring
-        (
-          this.shadowRoot?.querySelector(
-            `#${this.team}-${hole}-p1`
-          ) as HTMLSelectElement
-        ).value = bothScores[0];
+        if (p1Ele) p1Ele.value = bothScores[0];
+
+        const p2Ele = this.shadowRoot?.querySelector(
+          `#${this.team}-${hole}-p2`
+        ) as HTMLSelectElement;
+
         // eslint-disable-next-line prefer-destructuring
-        (
-          this.shadowRoot?.querySelector(
-            `#${this.team}-${hole}-p2`
-          ) as HTMLSelectElement
-        ).value = bothScores[1];
+        if (p2Ele) p2Ele.value = bothScores[1];
       });
-      this.setTotals(this.team, totalP1, totalP2);
+      this.setTotals('team', totalP1, totalP2);
     });
 
     const otherTeamToday = ref(getDatabase(), `/${this.teamOther}/${this.day}`);
     onValue(otherTeamToday, snapshot => {
-      const allData = snapshot.val();
+      const allData = snapshot.val() || {};
       let totalP1 = 0;
       let totalP2 = 0;
+
       Object.entries(allData).forEach(([hole, scores]) => {
         const bothScores = (scores as any).split('-');
+
         totalP1 += Number(bothScores[0]);
         totalP2 += Number(bothScores[1]);
 
+        const p1Ele = this.shadowRoot?.querySelector(
+          `#${this.teamOther}-${hole}-p1`
+        ) as HTMLSpanElement;
+
         // eslint-disable-next-line prefer-destructuring
-        (
-          this.shadowRoot?.querySelector(
-            `#${this.teamOther}-${hole}-p1`
-          ) as HTMLSelectElement
-        ).value = bothScores[0];
+        if (p1Ele) p1Ele.textContent = bothScores[0];
+
+        const p2Ele = this.shadowRoot?.querySelector(
+          `#${this.teamOther}-${hole}-p2`
+        ) as HTMLSpanElement;
+
         // eslint-disable-next-line prefer-destructuring
-        (
-          this.shadowRoot?.querySelector(
-            `#${this.teamOther}-${hole}-p2`
-          ) as HTMLSelectElement
-        ).value = bothScores[1];
+        if (p2Ele) p2Ele.textContent = bothScores[1];
       });
-      this.setTotals(this.teamOther, totalP1, totalP2);
+      this.setTotals('teamOther', totalP1, totalP2);
     });
   }
 
   firstUpdated() {
-    this.createTable();
-    this.getAllData();
+    this.setup();
   }
 
   private createTable() {
@@ -140,10 +165,10 @@ export class GolfDay extends LitElement {
     front9Holes.forEach(e => {
       htmlToUse += `<tr>
       <td>${e}</td>
-      <td><select id="team6-h${e}-p1">${allOptions}</select></td>
-      <td><select id="team6-h${e}-p2">${allOptions}</select></td>
-      <td><select id="team7-h${e}-p1">${allOptions}</select></td>
-      <td><select id="team7-h${e}-p2">${allOptions}</select></td>
+      <td><select id="${this.team}-h${e}-p1">${allOptions}</select></td>
+      <td><select id="${this.team}-h${e}-p2">${allOptions}</select></td>
+      <td><span id="${this.teamOther}-h${e}-p1">0</span></td>
+      <td><span id="${this.teamOther}-h${e}-p2">0</span></td>
       </tr>`;
     });
 
@@ -154,6 +179,7 @@ export class GolfDay extends LitElement {
     selectAry.forEach(ele => {
       ele.addEventListener('change', evt => this.onChange(evt));
     });
+    this.getAllData();
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -189,21 +215,21 @@ export class GolfDay extends LitElement {
         <table id="ScoresTable">
           <tr>
             <td>Hole</td>
-            <td colspan="2">
-              Team 6 <br />
+            <td style="color: blue; font-weight: bold;" colspan="2">
+              ${this.team} <br />
               Player1&nbsp;Player2
             </td>
             <td colspan="2">
-              Team 7 <br />
+              ${this.teamOther} <br />
               Player1&nbsp;Player2
             </td>
           </tr>
           <tr>
             <td>total</td>
-            <td id="total-t6-p1"></td>
-            <td id="total-t6-p2"></td>
-            <td id="total-t7-p1"></td>
-            <td id="total-t7-p2"></td>
+            <td id="total-team-p1"></td>
+            <td id="total-team-p2"></td>
+            <td id="total-teamother-p1"></td>
+            <td id="total-teamother-p2"></td>
           </tr>
         </table>
       </article>
