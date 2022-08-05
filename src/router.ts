@@ -1,6 +1,7 @@
 import { Route, Router } from '@vaadin/router';
-import './app';
 import { authGuard } from './services/auth-guard';
+import './app';
+import './components/CamerasHeader';
 
 // https://vaadin.github.io/router/vaadin-router/demo/#vaadin-router-getting-started-demos
 const routes: Route[] = [

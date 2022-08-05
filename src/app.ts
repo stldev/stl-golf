@@ -10,6 +10,9 @@ export class RbbApp extends LitElement {
   }
 
   render() {
-    return html` <slot></slot> `;
+    return html`
+      <cameras-header></cameras-header>
+      <slot></slot>
+    `;
   }
 }

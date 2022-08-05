@@ -14,6 +14,7 @@ export class GolfDayHome extends LitElement {
     css`
       article {
         text-align: center;
+        margin-top: 3rem;
       }
       ul {
         width: 20rem;

@@ -3,7 +3,6 @@ import { property, customElement, query } from 'lit/decorators.js';
 import {
   getAuth,
   signInWithEmailAndPassword,
-  signOut,
   UserCredential,
 } from 'firebase/auth';
 import { Subscription } from 'rxjs';
@@ -137,19 +136,13 @@ export class RbbHome extends LitElement {
     }
   }
 
-  private async signMeOut() {
-    await signOut(getAuth());
-    console.log(`${this.title} - signMeOut`);
-  }
-
   private authDisplay() {
     if (this.hasAuth) {
       const teamName = this.userEmail
         .replace('woodchoppers.golf+', '')
         .replace('@gmail.com', '')
         .toUpperCase();
-      return html`${teamName} &nbsp;&nbsp;&nbsp;
-        <button type="button" @click="${this.signMeOut}">signOut</button>`;
+      return html`${teamName}`;
     }
     if (this.authLoading) return html`loading...`;
 

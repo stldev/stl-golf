@@ -30,6 +30,7 @@ export class GolfDay extends LitElement {
     css`
       article {
         text-align: center;
+        margin-top: 3rem;
       }
       header {
         color: blue;
