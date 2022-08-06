@@ -172,7 +172,7 @@ export class CamerasHeader extends LitElement {
         <span @click="${this.openNav}" class="mobile-nav-open-icon"
           >&#9776;</span
         >
-        Woodchoppers &nbsp;&nbsp;&nbsp;
+        &#127794;&#129683; &nbsp;&nbsp;&nbsp;
       </nav>
     `;
   }

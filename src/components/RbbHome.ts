@@ -149,6 +149,16 @@ export class RbbHome extends LitElement {
     return html`Welcome!`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private onChange(e: any) {
+    const inputVal = (e.target.value as string) || '';
+
+    if (inputVal.length === 4) {
+      const isValid = /[0-9]{4}/.test(inputVal);
+      if (isValid) this.doUserLogin();
+    }
+  }
+
   render() {
     return html`
       <main>
@@ -164,9 +174,17 @@ export class RbbHome extends LitElement {
               <option value="6">Team 6</option>
               <option value="7">Team 7</option>
             </select>
-            <button type="button" @click="${this.doUserLogin}">
-              doUserLogin
-            </button>
+            <small style="font-size:11px"> 4 digit team pin =</small>
+
+            <input
+              @keyup=${(e: Event) => this.onChange(e)}
+              type="tel"
+              pattern="[0-9]{4}"
+              size="5"
+              maxlength="4"
+              minlength="4"
+              required
+            />
           </div>
         </section>
         <section id="itemsSection" style="display: none">

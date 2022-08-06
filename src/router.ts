@@ -10,6 +10,24 @@ const routes: Route[] = [
     component: 'rbb-app',
     children: [
       {
+        path: '__',
+        component: 'rbb-app',
+        children: [
+          {
+            path: '/auth',
+            // redirect: '',
+            component: 'rbb-app',
+            children: [
+              {
+                path: '/action',
+                // redirect: '',
+                component: 'rbb-app',
+              },
+            ],
+          },
+        ],
+      },
+      {
         path: 'home',
         component: 'rbb-home',
         action: async () => {
