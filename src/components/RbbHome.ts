@@ -111,28 +111,31 @@ export class RbbHome extends LitElement {
     if (_changedProps.has('hasAuth')) this.handleAuthLoginDisplay();
   }
 
-  private async doUserLogin() {
+  private async doUserLogin(pin: string) {
     this.errorMessage.innerHTML = '';
     this.errorMessage.style.display = 'none';
     const signInResult: UserCredential = await signInWithEmailAndPassword(
       getAuth(),
       `woodchoppers.golf+team${this.emailEle.value}@gmail.com`,
-      `${process.env.PASSWORD_BASE}${this.emailEle.value}`
+      `${process.env.PASSWORD_BASE}${this.emailEle.value}-${pin}`
     ).catch(err => {
       this.errorMessage.innerHTML = err.message || 'sign in error.';
-      this.errorMessage.style.display = 'block';
-      this.hasAuth = false;
       return null;
     });
 
     if (signInResult?.user) {
+      this.authLoading = false;
       const { user } = signInResult;
       console.log('signInResult-user', user);
       this.emailEle.value = '';
       this.loginFormEle.style.display = 'none';
       this.hasAuth = true;
     } else {
-      this.hasAuth = false;
+      setTimeout(() => {
+        this.errorMessage.style.display = 'block';
+        this.hasAuth = false;
+        this.authLoading = false;
+      }, 2500);
     }
   }
 
@@ -155,9 +158,15 @@ export class RbbHome extends LitElement {
 
     if (inputVal.length === 4) {
       const isValid = /[0-9]{4}/.test(inputVal);
-      if (isValid) this.doUserLogin();
+      if (isValid) {
+        e.target.value = '';
+        this.authLoading = true;
+        this.doUserLogin(inputVal);
+      }
     }
   }
+
+  // ${this.authLoading ? 'disabled' : ''}
 
   render() {
     return html`
