@@ -183,7 +183,8 @@ export class RbbHome extends LitElement {
               <option value="6">Team 6</option>
               <option value="7">Team 7</option>
             </select>
-            <small style="font-size:11px"> 4 digit team pin =</small>
+            <br /><br />
+            <small style="font-size:11px">4 digit team pin:</small>
 
             <input
               @keyup=${(e: Event) => this.onChange(e)}
