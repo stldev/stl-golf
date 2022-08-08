@@ -7,8 +7,6 @@ import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-golf-day-home')
 export class GolfDayHome extends LitElement {
-  @state() team = '';
-
   @state() pairings = [];
 
   @state() allSubs = new Subscription();
@@ -35,7 +33,6 @@ export class GolfDayHome extends LitElement {
 
   constructor() {
     super();
-    this.team = localStorage.getItem('woodchopper-team');
     storeSvc.getData();
     const sub1 = this.pairings$.subscribe(p => {
       this.pairings = p;
@@ -57,11 +54,15 @@ export class GolfDayHome extends LitElement {
     Router.go(path);
   }
 
+  static getTeam() {
+    return localStorage.getItem('woodchopper-team');
+  }
+
   render() {
     return html`
       <article>
         <header>
-          <h2>All golf days for ${this.team}</h2>
+          <h2>All golf days for ${GolfDayHome.getTeam()}</h2>
         </header>
         <div>
           ${this.pairings.map(
