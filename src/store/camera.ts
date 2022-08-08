@@ -17,7 +17,7 @@ class StoreService {
 
   init() {
     this.authHandler(this.team);
-    if (this.team) this.getData();
+    if (this.team) this.getData(this.team);
   }
 
   authHandler(team: string) {
@@ -41,8 +41,8 @@ class StoreService {
     });
   }
 
-  getData() {
-    if (this.pairingPristine) {
+  getData(team: string) {
+    if (this.pairingPristine && team) {
       const thisYear = new Date().getFullYear();
       const pairingsTemp = [];
 
@@ -51,10 +51,10 @@ class StoreService {
         const allData = snapshot.val() || {};
 
         Object.entries(allData).forEach(([day, pair]) => {
-          let pairing = `${day} => ${this.team} vs `;
+          let pairing = `${day} => ${team} vs `;
           Object.entries(pair).forEach(([teamA, teamB]) => {
-            if (teamA === this.team) pairing += teamB;
-            if (teamB === this.team) pairing += teamA;
+            if (teamA === team) pairing += teamB;
+            if (teamB === team) pairing += teamA;
           });
 
           pairingsTemp.push(pairing);

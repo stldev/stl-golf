@@ -33,7 +33,7 @@ export class GolfDayHome extends LitElement {
 
   constructor() {
     super();
-    storeSvc.getData();
+    storeSvc.getData(GolfDayHome.getTeam());
     const sub1 = this.pairings$.subscribe(p => {
       this.pairings = p;
     });
