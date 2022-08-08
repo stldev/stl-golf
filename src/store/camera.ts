@@ -32,7 +32,8 @@ class StoreService {
         this.currentTeam$.next(user.email);
         const teamName = user.email
           .replace('woodchoppers.golf+', '')
-          .replace('@gmail.com', '');
+          .replace('@gmail.com', '')
+          .toLowerCase();
         localStorage.setItem('woodchopper-team', teamName);
       } else {
         this.currentTeam$.next('');

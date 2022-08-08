@@ -127,7 +127,11 @@ export class Home extends LitElement {
 
     if (signInResult?.user) {
       this.authLoading = false;
-      storeSvc.getData();
+      const teamName = this.userEmail
+        .replace('woodchoppers.golf+', '')
+        .replace('@gmail.com', '')
+        .toLowerCase();
+      storeSvc.getData(teamName);
       const { user } = signInResult;
       console.log('signInResult-user', user);
       this.emailEle.value = '';
