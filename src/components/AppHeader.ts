@@ -146,10 +146,9 @@ export class AppHeader extends LitElement {
   }
 
   private async signMeOut() {
-    await signOut(getAuth());
-    console.log(`${this.title} - signMeOut`);
     this.closeNav();
-    setTimeout(() => Router.go('/home'), 25);
+    await signOut(getAuth());
+    Router.go('/home');
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -165,7 +164,7 @@ export class AppHeader extends LitElement {
           <a
             href="javascript:void(0)"
             class="closebtn"
-            @click="${this.closeNav}"
+            @click="${() => this.closeNav}"
             >&times;</a
           >
         </span>
@@ -176,7 +175,10 @@ export class AppHeader extends LitElement {
           <button style="width:100%" @click="${() => this.goTo('/golf-day')}">
             Golf Days
           </button>
-          <a class="link-border" href="#" @click="${() => this.signMeOut}"
+          <a
+            class="link-border"
+            href="javascript:"
+            @click="${() => this.signMeOut()}"
             >Sign out</a
           >
         </div>
