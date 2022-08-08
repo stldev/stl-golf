@@ -162,9 +162,9 @@ export class AppHeader extends LitElement {
       <div id="mySidenav" class="sidenav-container">
         <span class="drawer-close-button">
           <a
-            href="javascript:void(0)"
+            href="javascript:"
             class="closebtn"
-            @click="${() => this.closeNav}"
+            @click="${() => this.closeNav()}"
             >&times;</a
           >
         </span>
