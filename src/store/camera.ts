@@ -17,6 +17,7 @@ class StoreService {
 
   init() {
     this.authHandler(this.team);
+    if (this.team) this.getData();
   }
 
   authHandler(team: string) {
@@ -47,7 +48,7 @@ class StoreService {
 
       const schedule = ref(getDatabase(), `/${thisYear}-schedule`);
       onValue(schedule, snapshot => {
-        const allData = snapshot.val();
+        const allData = snapshot.val() || {};
 
         Object.entries(allData).forEach(([day, pair]) => {
           let pairing = `${day} => ${this.team} vs `;
