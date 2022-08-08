@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { property, customElement, query } from 'lit/decorators.js';
+import { state, customElement, query } from 'lit/decorators.js';
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -11,14 +11,16 @@ import { storeSvc } from '../store/camera';
 // const logo = new URL('../../assets/open-wc-logo.svg', import.meta.url).href;
 
 @customElement('rbb-home')
-export class RbbHome extends LitElement {
-  @property({ type: String }) title = 'Woodchoppers';
+export class Home extends LitElement {
+  @state() title = 'Woodchoppers';
 
-  @property({ type: Boolean }) hasAuth = false;
+  @state() hasAuth = false;
 
-  @property({ type: Boolean }) authLoading = false;
+  @state() authLoading = false;
 
-  @property({ type: String }) userEmail = '';
+  @state() userEmail = '';
+
+  @state() allSubs = new Subscription();
 
   @query('#loginForm') loginFormEle: HTMLDivElement;
 
@@ -27,8 +29,6 @@ export class RbbHome extends LitElement {
   @query('#team-select') emailEle: HTMLInputElement;
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
-
-  @property({ type: Object }) allSubs = new Subscription();
 
   private currentUserEmail$ = storeSvc.currentUserEmail$;
 
@@ -91,8 +91,9 @@ export class RbbHome extends LitElement {
   }
 
   disconnectedCallback() {
-    this.allSubs.unsubscribe();
     console.log(`${this.tagName} destroyed!`);
+    this.allSubs.unsubscribe();
+    if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
   private handleAuthLoginDisplay() {

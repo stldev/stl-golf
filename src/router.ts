@@ -1,7 +1,7 @@
 import { Route, Router } from '@vaadin/router';
 import { authGuard } from './services/auth-guard';
 import './app';
-import './components/CamerasHeader';
+import './components/AppHeader';
 
 // https://vaadin.github.io/router/vaadin-router/demo/#vaadin-router-getting-started-demos
 const routes: Route[] = [
@@ -31,7 +31,7 @@ const routes: Route[] = [
         path: 'home',
         component: 'rbb-home',
         action: async () => {
-          await import('./components/RbbHome');
+          await import('./components/Home');
         },
       },
       {
@@ -42,7 +42,9 @@ const routes: Route[] = [
             path: '/',
             component: 'rbb-golf-day-home',
             action: async () => {
-              await import('./components/GolfDayHome');
+              await import('./components/GolfDayHome').catch(err =>
+                console.log('routerERROR:', err)
+              );
             },
           },
           {

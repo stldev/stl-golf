@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { css } from 'lit-element';
+import { css } from 'lit';
 
 // MVP.css v1.7.4 - https://github.com/andybrewer/mvp
 export const mvpCss = css`

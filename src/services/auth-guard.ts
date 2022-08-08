@@ -4,5 +4,5 @@ export async function authGuard(context: any, commands: any) {
   if (curUser) return undefined;
 
   console.log('User not authorized', context.pathname);
-  return commands.redirect('/');
+  return commands.redirect('/home');
 }

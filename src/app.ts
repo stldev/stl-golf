@@ -11,7 +11,7 @@ export class RbbApp extends LitElement {
 
   render() {
     return html`
-      <cameras-header></cameras-header>
+      <rbb-app-header></rbb-app-header>
       <slot></slot>
     `;
   }

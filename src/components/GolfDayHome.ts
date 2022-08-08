@@ -1,13 +1,20 @@
+import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-golf-day-home')
 export class GolfDayHome extends LitElement {
-  @property({ type: String }) team = '';
+  @state() team = '';
 
-  @property({ type: Array }) pairings = [];
+  @state() pairings = [];
+
+  constructor() {
+    super();
+    this.team = GolfDayHome.getTeam();
+    this.getData();
+  }
 
   static styles = [
     mvpCss,
@@ -27,12 +34,19 @@ export class GolfDayHome extends LitElement {
     `,
   ];
 
-  firstUpdated() {
-    this.team = localStorage
+  disconnectedCallback() {
+    console.log(`${this.tagName} destroyed!`);
+    if (super.disconnectedCallback) super.disconnectedCallback();
+  }
+
+  static getTeam() {
+    return localStorage
       .getItem('woodchopper-email')
       .replace('woodchoppers.golf+', '')
       .replace('@gmail.com', '');
+  }
 
+  getData() {
     const thisYear = new Date().getFullYear();
     const pairingsTemp = [];
 
@@ -54,20 +68,26 @@ export class GolfDayHome extends LitElement {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private goTo(pair: string) {
+    const path = `golf-day/${pair.split(' =>')[0]}`;
+
+    Router.go(path);
+  }
+
   render() {
     return html`
       <article>
         <header>
           <h2>All golf days for ${this.team}</h2>
         </header>
-        <ul>
+        <div>
           ${this.pairings.map(
             pair =>
-              html`
-                <li><a href="golf-day/${pair.split(' =>')[0]}">${pair}</a></li>
-              `
+              html`<button @click="${() => this.goTo(pair)}">${pair}</button
+                ><br />`
           )}
-        </ul>
+        </div>
       </article>
     `;
   }

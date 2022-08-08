@@ -6,8 +6,8 @@ import { customElement, property, query } from 'lit/decorators.js';
 import { getAuth, signOut } from 'firebase/auth';
 import { mvpCss } from '../styles-3rdParty';
 
-@customElement('cameras-header')
-export class CamerasHeader extends LitElement {
+@customElement('rbb-app-header')
+export class AppHeader extends LitElement {
   @property({ type: Boolean }) hideButton: boolean = true;
 
   @query('#mySidenav') _sideNav: HTMLDivElement;
@@ -81,7 +81,9 @@ export class CamerasHeader extends LitElement {
 
       .link-border {
         padding: 0.5rem;
-        border: 5px solid yellow;
+        border-bottom: 5px solid yellow;
+        width: 90%;
+        text-align: center;
       }
 
       .sidenav-container a:hover {
@@ -140,6 +142,7 @@ export class CamerasHeader extends LitElement {
 
   disconnectedCallback() {
     console.log(`${this.tagName} destroyed!`);
+    if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
   private async signMeOut() {
@@ -147,6 +150,12 @@ export class CamerasHeader extends LitElement {
     console.log(`${this.title} - signMeOut`);
     this.closeNav();
     setTimeout(() => Router.go('/home'), 25);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private goTo(path: string) {
+    Router.go(path);
+    this.closeNav();
   }
 
   render() {
@@ -160,12 +169,17 @@ export class CamerasHeader extends LitElement {
             >&times;</a
           >
         </span>
-
-        <a class="link-border" href="/home" @click="${this.closeNav}">Home</a>
-        <a class="link-border" href="/golf-day" @click="${this.closeNav}"
-          >Golf Days</a
-        >
-        <button @click="${this.signMeOut}">Sign out</button>
+        <div style="width:50%">
+          <button style="width:100%" @click="${() => this.goTo('/home')}">
+            Home
+          </button>
+          <button style="width:100%" @click="${() => this.goTo('/golf-day')}">
+            Golf Days
+          </button>
+          <a class="link-border" href="#" @click="${() => this.signMeOut}"
+            >Sign out</a
+          >
+        </div>
       </div>
       <div class="backdrop-container" id="backdrop"></div>
       <nav>

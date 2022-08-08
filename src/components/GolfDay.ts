@@ -1,19 +1,19 @@
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
+import { customElement, state, query } from 'lit/decorators.js';
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import { router } from '../router';
 import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-golf-day')
 export class GolfDay extends LitElement {
-  @property({ type: Object }) location = router.location;
+  @state() location = router.location;
 
-  @property({ type: String }) day = '';
+  @state() day = '';
 
-  @property({ type: String }) team = '';
+  @state() team = '';
 
-  @property({ type: String }) teamOther = '';
+  @state() teamOther = '';
 
   @query('#ScoresTable tbody') scoresTableEle: HTMLTableElement;
 
@@ -24,6 +24,10 @@ export class GolfDay extends LitElement {
   @query('#total-teamother-p1') totalTeamOtherP1Ele: HTMLTableElement;
 
   @query('#total-teamother-p2') totalTeamOtherP2Ele: HTMLTableElement;
+
+  protected updated(_changedProps: Map<string | number | symbol, unknown>) {
+    if (_changedProps.has('day')) this.dayHandler();
+  }
 
   static styles = [
     mvpCss,
@@ -46,6 +50,30 @@ export class GolfDay extends LitElement {
       }
     `,
   ];
+
+  constructor() {
+    super();
+    this.team = GolfDay.getTeam();
+  }
+
+  connectedCallback() {
+    this.day = this.location.params.day.toString();
+    if (super.connectedCallback) super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    console.log(`${this.tagName} destroyed!`);
+    // const selectNodes = this.shadowRoot?.querySelectorAll('select');
+    // const selectAry = Array.from(selectNodes);
+    // selectAry.forEach(ele => {
+    //   ele.removeEventListener('change', evt => this.onChange(evt));
+    // });
+    if (super.disconnectedCallback) super.disconnectedCallback();
+  }
+
+  dayHandler() {
+    this.getPairings();
+  }
 
   setTotals(team: string, p1: number, p2: number) {
     if (team === 'team') {
@@ -72,20 +100,9 @@ export class GolfDay extends LitElement {
         if (teamA === this.team) this.teamOther = teamB as string;
         if (teamB === this.team) this.teamOther = teamA as string;
       });
-
       this.createTable();
+      this.getAllData();
     });
-  }
-
-  setup() {
-    this.team = localStorage
-      .getItem('woodchopper-email')
-      .replace('woodchoppers.golf+', '')
-      .replace('@gmail.com', '');
-
-    this.day = this.location.params.day.toString();
-
-    this.getPairings();
   }
 
   getAllData() {
@@ -122,7 +139,6 @@ export class GolfDay extends LitElement {
       const allData = snapshot.val() || {};
       let totalP1 = 0;
       let totalP2 = 0;
-
       Object.entries(allData).forEach(([hole, scores]) => {
         const bothScores = (scores as any).split('-');
 
@@ -147,8 +163,11 @@ export class GolfDay extends LitElement {
     });
   }
 
-  firstUpdated() {
-    this.setup();
+  static getTeam() {
+    return localStorage
+      .getItem('woodchopper-email')
+      .replace('woodchoppers.golf+', '')
+      .replace('@gmail.com', '');
   }
 
   private createTable() {
@@ -193,16 +212,13 @@ export class GolfDay extends LitElement {
     const selectNodes = this.shadowRoot?.querySelectorAll('select');
     const selectAry = Array.from(selectNodes);
     selectAry.forEach(ele => {
-      ele.addEventListener('change', evt => this.onChange(evt));
+      ele.addEventListener('change', evt => this.onChange(evt), { once: true });
     });
-    this.getAllData();
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private onChange(e: any) {
     const changedProps = e.target.id.split('-');
     // console.log(changedProps);
-    // const dayToUse = this.location.params.day;
     const team = changedProps[0];
     const hole = changedProps[1];
     const scoreP1 = (
