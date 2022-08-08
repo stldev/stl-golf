@@ -1,3 +1,4 @@
+/* eslint-disable lit-a11y/click-events-have-key-events */
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state, query } from 'lit/decorators.js';
@@ -107,6 +108,7 @@ export class GolfDay extends LitElement {
   }
 
   getAllData() {
+    console.log('GET=ALL-DATA');
     const myTeamToday = ref(getDatabase(), `/${this.team}/${this.day}`);
     onValue(myTeamToday, snapshot => {
       const allData = snapshot.val() || {};
@@ -241,11 +243,22 @@ export class GolfDay extends LitElement {
     );
   }
 
+  private refresh() {
+    this.getPairings();
+  }
+
   render() {
     return html`
       <article>
         <header>
-          <h2>${this.team} on ${this.day}</h2>
+          <h3>
+            ${this.team} on ${this.day} &nbsp;&nbsp;
+            <span
+              style="font-size: 9px; border: 1px black solid;"
+              @click="${() => this.refresh()}"
+              >refresh</span
+            >
+          </h3>
         </header>
         <table id="ScoresTable">
           <tr>
