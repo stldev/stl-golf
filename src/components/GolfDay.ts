@@ -26,10 +26,6 @@ export class GolfDay extends LitElement {
 
   @query('#total-teamother-p2') totalTeamOtherP2Ele: HTMLTableElement;
 
-  protected updated(_changedProps: Map<string | number | symbol, unknown>) {
-    if (_changedProps.has('day')) this.dayHandler();
-  }
-
   static styles = [
     mvpCss,
     css`
@@ -54,7 +50,7 @@ export class GolfDay extends LitElement {
 
   constructor() {
     super();
-    this.team = GolfDay.getTeam();
+    this.team = localStorage.getItem('woodchopper-team');
   }
 
   connectedCallback() {
@@ -70,6 +66,10 @@ export class GolfDay extends LitElement {
     //   ele.removeEventListener('change', evt => this.onChange(evt));
     // });
     if (super.disconnectedCallback) super.disconnectedCallback();
+  }
+
+  protected updated(_changedProps: Map<string | number | symbol, unknown>) {
+    if (_changedProps.has('day')) this.dayHandler();
   }
 
   dayHandler() {
@@ -164,13 +164,6 @@ export class GolfDay extends LitElement {
       });
       this.setTotals('teamOther', totalP1, totalP2);
     });
-  }
-
-  static getTeam() {
-    return localStorage
-      .getItem('woodchopper-email')
-      .replace('woodchoppers.golf+', '')
-      .replace('@gmail.com', '');
   }
 
   private createTable(isFront: boolean) {

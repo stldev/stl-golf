@@ -30,7 +30,7 @@ export class Home extends LitElement {
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
 
-  private currentUserEmail$ = storeSvc.currentUserEmail$;
+  private currentUserEmail$ = storeSvc.currentTeam$;
 
   static styles = css`
     :host {
@@ -75,7 +75,8 @@ export class Home extends LitElement {
     }
   `;
 
-  firstUpdated() {
+  constructor() {
+    super();
     this.authLoading = true;
     const sub1 = this.currentUserEmail$.subscribe(currentUserEmail => {
       this.authLoading = false;
@@ -126,6 +127,7 @@ export class Home extends LitElement {
 
     if (signInResult?.user) {
       this.authLoading = false;
+      storeSvc.getData();
       const { user } = signInResult;
       console.log('signInResult-user', user);
       this.emailEle.value = '';

@@ -1,27 +1,73 @@
 import { ReplaySubject } from 'rxjs';
 import { getAuth } from 'firebase/auth';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 class StoreService {
-  public currentUserEmail$ = new ReplaySubject<string>(1);
+  private team = '';
+
+  private pairingPristine = true;
+
+  public currentTeam$ = new ReplaySubject<string>(1);
+
+  public pairings$ = new ReplaySubject<any[]>(1);
+
+  constructor() {
+    this.team = localStorage.getItem('woodchopper-team') || '';
+  }
 
   init() {
-    const email = localStorage.getItem('woodchopper-email');
+    this.authHandler(this.team);
+  }
 
-    if (email) {
-      this.currentUserEmail$.next(email);
+  authHandler(team: string) {
+    if (team) {
+      this.currentTeam$.next(team);
     } else {
-      this.currentUserEmail$.next('');
+      this.currentTeam$.next('');
     }
 
     getAuth().onAuthStateChanged(user => {
       if (user?.email) {
-        this.currentUserEmail$.next(user.email);
-        localStorage.setItem('woodchopper-email', user.email);
+        this.currentTeam$.next(user.email);
+        const teamName = user.email
+          .replace('woodchoppers.golf+', '')
+          .replace('@gmail.com', '');
+        localStorage.setItem('woodchopper-team', teamName);
       } else {
-        this.currentUserEmail$.next('');
-        localStorage.removeItem('woodchopper-email');
+        this.currentTeam$.next('');
+        localStorage.removeItem('woodchopper-team');
       }
     });
+  }
+
+  getData() {
+    if (this.pairingPristine) {
+      const thisYear = new Date().getFullYear();
+      const pairingsTemp = [];
+
+      const schedule = ref(getDatabase(), `/${thisYear}-schedule`);
+      onValue(schedule, snapshot => {
+        const allData = snapshot.val();
+
+        Object.entries(allData).forEach(([day, pair]) => {
+          let pairing = `${day} => ${this.team} vs `;
+          Object.entries(pair).forEach(([teamA, teamB]) => {
+            if (teamA === this.team) pairing += teamB;
+            if (teamB === this.team) pairing += teamA;
+          });
+
+          pairingsTemp.push(pairing);
+        });
+
+        if (pairingsTemp.length) {
+          this.pairings$.next(pairingsTemp);
+        } else {
+          this.pairings$.next([]);
+        }
+      });
+
+      this.pairingPristine = false;
+    }
   }
 }
 

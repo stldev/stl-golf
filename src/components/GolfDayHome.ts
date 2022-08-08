@@ -1,7 +1,8 @@
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { Subscription } from 'rxjs';
+import { storeSvc } from '../store/camera';
 import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-golf-day-home')
@@ -10,11 +11,9 @@ export class GolfDayHome extends LitElement {
 
   @state() pairings = [];
 
-  constructor() {
-    super();
-    this.team = GolfDayHome.getTeam();
-    this.getData();
-  }
+  @state() allSubs = new Subscription();
+
+  private pairings$ = storeSvc.pairings$;
 
   static styles = [
     mvpCss,
@@ -34,38 +33,21 @@ export class GolfDayHome extends LitElement {
     `,
   ];
 
+  constructor() {
+    super();
+    this.team = localStorage.getItem('woodchopper-team');
+    storeSvc.getData();
+    const sub1 = this.pairings$.subscribe(p => {
+      this.pairings = p;
+    });
+
+    this.allSubs.add(sub1);
+  }
+
   disconnectedCallback() {
     console.log(`${this.tagName} destroyed!`);
+    this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
-  }
-
-  static getTeam() {
-    return localStorage
-      .getItem('woodchopper-email')
-      .replace('woodchoppers.golf+', '')
-      .replace('@gmail.com', '');
-  }
-
-  getData() {
-    const thisYear = new Date().getFullYear();
-    const pairingsTemp = [];
-
-    const schedule = ref(getDatabase(), `/${thisYear}-schedule`);
-    onValue(schedule, snapshot => {
-      const allData = snapshot.val();
-
-      Object.entries(allData).forEach(([day, pair]) => {
-        let pairing = `${day} => ${this.team} vs `;
-        Object.entries(pair).forEach(([teamA, teamB]) => {
-          if (teamA === this.team) pairing += teamB;
-          if (teamB === this.team) pairing += teamA;
-        });
-
-        pairingsTemp.push(pairing);
-      });
-
-      this.pairings = pairingsTemp;
-    });
   }
 
   // eslint-disable-next-line class-methods-use-this
