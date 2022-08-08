@@ -169,7 +169,7 @@ export class AppHeader extends LitElement {
             >&times;</a
           >
         </span>
-        <div style="width:50%">
+        <div style="width:95%">
           <button style="width:100%" @click="${() => this.goTo('/home')}">
             Home
           </button>
