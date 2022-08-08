@@ -100,7 +100,8 @@ export class GolfDay extends LitElement {
         if (teamA === this.team) this.teamOther = teamB as string;
         if (teamB === this.team) this.teamOther = teamA as string;
       });
-      this.createTable();
+
+      this.createTable(pair.isFront);
       this.getAllData();
     });
   }
@@ -170,7 +171,7 @@ export class GolfDay extends LitElement {
       .replace('@gmail.com', '');
   }
 
-  private createTable() {
+  private createTable(isFront: boolean) {
     const allOptions = Array(11)
       .fill('')
       .map((e, i) => {
@@ -178,7 +179,9 @@ export class GolfDay extends LitElement {
         return `<option value="${i}">${i}</option>`;
       });
 
-    const front9Holes = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const holesToUse = isFront
+      ? [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      : [10, 11, 12, 13, 14, 15, 16, 17, 18];
 
     let htmlToUse = '';
 
@@ -193,7 +196,7 @@ export class GolfDay extends LitElement {
     // TODO: put this back in effect after beta testing
     const isDisabledPast = false; // Date.now() < cutoffTimeInPast ? 'disabled' : '';
 
-    front9Holes.forEach(e => {
+    holesToUse.forEach(e => {
       htmlToUse += `<tr>
       <td>${e}</td>
       <td><select ${isDisabledFuture || isDisabledPast} id="${
