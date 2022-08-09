@@ -2,7 +2,9 @@
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state, query } from 'lit/decorators.js';
-import { getDatabase, ref, set, onValue } from 'firebase/database';
+import { getDatabase, ref, set } from 'firebase/database';
+import { Subscription, combineLatest } from 'rxjs';
+import { storeSvc } from '../store/data';
 import { router } from '../router';
 import { mvpCss } from '../styles-3rdParty';
 
@@ -16,6 +18,10 @@ export class GolfDay extends LitElement {
 
   @state() teamOther = '';
 
+  @state() scoreDb = getDatabase();
+
+  @state() allSubs = new Subscription();
+
   @query('#ScoresTable tbody') scoresTableEle: HTMLTableElement;
 
   @query('#total-team-p1') totalTeamP1Ele: HTMLTableElement;
@@ -25,6 +31,12 @@ export class GolfDay extends LitElement {
   @query('#total-teamother-p1') totalTeamOtherP1Ele: HTMLTableElement;
 
   @query('#total-teamother-p2') totalTeamOtherP2Ele: HTMLTableElement;
+
+  private schedule = storeSvc.schedule$;
+
+  private myTeamToday = storeSvc.myTeamToday$;
+
+  private otherTeamToday = storeSvc.otherTeamToday$;
 
   static styles = [
     mvpCss,
@@ -50,7 +62,13 @@ export class GolfDay extends LitElement {
 
   constructor() {
     super();
-    this.team = localStorage.getItem('woodchopper-team');
+    const team = GolfDay.getTeam();
+    storeSvc.getSchedule(team);
+    this.team = team;
+  }
+
+  static getTeam() {
+    return localStorage.getItem('woodchopper-team');
   }
 
   connectedCallback() {
@@ -60,6 +78,7 @@ export class GolfDay extends LitElement {
 
   disconnectedCallback() {
     console.log(`${this.tagName} destroyed!`);
+    this.allSubs.unsubscribe();
     // const selectNodes = this.shadowRoot?.querySelectorAll('select');
     // const selectAry = Array.from(selectNodes);
     // selectAry.forEach(ele => {
@@ -73,7 +92,85 @@ export class GolfDay extends LitElement {
   }
 
   dayHandler() {
-    this.getPairings();
+    const sub1 = this.schedule.subscribe(s => {
+      const pair = s[this.day] || {};
+
+      Object.entries(pair).forEach(([teamA, teamB]) => {
+        if (teamA === this.team) this.teamOther = teamB as string;
+        if (teamB === this.team) this.teamOther = teamA as string;
+      });
+
+      this.createTable(pair.isFront);
+      storeSvc.getMyTeamToday(this.team, this.day);
+      storeSvc.getOtherTeamToday(this.teamOther, this.day);
+
+      this.dataHandler();
+    });
+
+    this.allSubs.add(sub1);
+  }
+
+  dataHandler() {
+    const sub = combineLatest({
+      myTeam: this.myTeamToday,
+      otherTeam: this.otherTeamToday,
+    }).subscribe(teams => {
+      this.setMyTeam(teams.myTeam);
+      this.setOtherTeam(teams.otherTeam);
+    });
+    this.allSubs.add(sub);
+  }
+
+  setOtherTeam(holeAndScore: any) {
+    let totalP1 = 0;
+    let totalP2 = 0;
+    Object.entries(holeAndScore).forEach(([hole, scores]) => {
+      const bothScores = (scores as any).split('-');
+
+      totalP1 += Number(bothScores[0]);
+      totalP2 += Number(bothScores[1]);
+
+      const p1Ele = this.shadowRoot?.querySelector(
+        `#${this.teamOther}-${hole}-p1`
+      ) as HTMLSpanElement;
+
+      // eslint-disable-next-line prefer-destructuring
+      if (p1Ele) p1Ele.textContent = bothScores[0];
+
+      const p2Ele = this.shadowRoot?.querySelector(
+        `#${this.teamOther}-${hole}-p2`
+      ) as HTMLSpanElement;
+
+      // eslint-disable-next-line prefer-destructuring
+      if (p2Ele) p2Ele.textContent = bothScores[1];
+    });
+    this.setTotals('teamOther', totalP1, totalP2);
+  }
+
+  setMyTeam(holeAndScore: any) {
+    let totalP1 = 0;
+    let totalP2 = 0;
+    Object.entries(holeAndScore).forEach(([hole, scores]) => {
+      const bothScores = (scores as any).split('-');
+
+      totalP1 += Number(bothScores[0]);
+      totalP2 += Number(bothScores[1]);
+
+      const p1Ele = this.shadowRoot?.querySelector(
+        `#${this.team}-${hole}-p1`
+      ) as HTMLSelectElement;
+
+      // eslint-disable-next-line prefer-destructuring
+      if (p1Ele) p1Ele.value = bothScores[0];
+
+      const p2Ele = this.shadowRoot?.querySelector(
+        `#${this.team}-${hole}-p2`
+      ) as HTMLSelectElement;
+
+      // eslint-disable-next-line prefer-destructuring
+      if (p2Ele) p2Ele.value = bothScores[1];
+    });
+    this.setTotals('team', totalP1, totalP2);
   }
 
   setTotals(team: string, p1: number, p2: number) {
@@ -86,84 +183,6 @@ export class GolfDay extends LitElement {
       this.totalTeamOtherP1Ele.textContent = p1.toString();
       this.totalTeamOtherP2Ele.textContent = p2.toString();
     }
-  }
-
-  getPairings() {
-    const thisYear = new Date().getFullYear();
-
-    const schedule = ref(getDatabase(), `/${thisYear}-schedule`);
-    onValue(schedule, snapshot => {
-      const allData = snapshot.val() || {};
-
-      const pair = allData[this.day] || {};
-
-      Object.entries(pair).forEach(([teamA, teamB]) => {
-        if (teamA === this.team) this.teamOther = teamB as string;
-        if (teamB === this.team) this.teamOther = teamA as string;
-      });
-
-      this.createTable(pair.isFront);
-      this.getAllData();
-    });
-  }
-
-  getAllData() {
-    console.log('GET=ALL-DATA');
-    const myTeamToday = ref(getDatabase(), `/${this.team}/${this.day}`);
-    onValue(myTeamToday, snapshot => {
-      const allData = snapshot.val() || {};
-      let totalP1 = 0;
-      let totalP2 = 0;
-      Object.entries(allData).forEach(([hole, scores]) => {
-        const bothScores = (scores as any).split('-');
-
-        totalP1 += Number(bothScores[0]);
-        totalP2 += Number(bothScores[1]);
-
-        const p1Ele = this.shadowRoot?.querySelector(
-          `#${this.team}-${hole}-p1`
-        ) as HTMLSelectElement;
-
-        // eslint-disable-next-line prefer-destructuring
-        if (p1Ele) p1Ele.value = bothScores[0];
-
-        const p2Ele = this.shadowRoot?.querySelector(
-          `#${this.team}-${hole}-p2`
-        ) as HTMLSelectElement;
-
-        // eslint-disable-next-line prefer-destructuring
-        if (p2Ele) p2Ele.value = bothScores[1];
-      });
-      this.setTotals('team', totalP1, totalP2);
-    });
-
-    const otherTeamToday = ref(getDatabase(), `/${this.teamOther}/${this.day}`);
-    onValue(otherTeamToday, snapshot => {
-      const allData = snapshot.val() || {};
-      let totalP1 = 0;
-      let totalP2 = 0;
-      Object.entries(allData).forEach(([hole, scores]) => {
-        const bothScores = (scores as any).split('-');
-
-        totalP1 += Number(bothScores[0]);
-        totalP2 += Number(bothScores[1]);
-
-        const p1Ele = this.shadowRoot?.querySelector(
-          `#${this.teamOther}-${hole}-p1`
-        ) as HTMLSpanElement;
-
-        // eslint-disable-next-line prefer-destructuring
-        if (p1Ele) p1Ele.textContent = bothScores[0];
-
-        const p2Ele = this.shadowRoot?.querySelector(
-          `#${this.teamOther}-${hole}-p2`
-        ) as HTMLSpanElement;
-
-        // eslint-disable-next-line prefer-destructuring
-        if (p2Ele) p2Ele.textContent = bothScores[1];
-      });
-      this.setTotals('teamOther', totalP1, totalP2);
-    });
   }
 
   private createTable(isFront: boolean) {
@@ -226,32 +245,21 @@ export class GolfDay extends LitElement {
       this.shadowRoot?.querySelector(`#${team}-${hole}-p2`) as HTMLSelectElement
     ).value;
 
-    const db = getDatabase();
     // set(ref(db, '/team7/2022-07-27/h3'), '1-2');
-    set(ref(db, `/${team}/${this.day}/${hole}`), `${scoreP1}-${scoreP2}`).catch(
-      err => {
-        console.log('Firebase-database-ERROR', err);
-        Router.go(`/golf-day/${this.day}`);
-      }
-    );
-  }
-
-  private refresh() {
-    this.getPairings();
+    set(
+      ref(this.scoreDb, `/${team}/${this.day}/${hole}`),
+      `${scoreP1}-${scoreP2}`
+    ).catch(err => {
+      console.log('Firebase-database-ERROR', err);
+      Router.go(`/golf-day/${this.day}`);
+    });
   }
 
   render() {
     return html`
       <article>
         <header>
-          <h3>
-            ${this.team} on ${this.day} &nbsp;&nbsp;
-            <span
-              style="font-size: 9px; border: 1px black solid;"
-              @click="${() => this.refresh()}"
-              >refresh</span
-            >
-          </h3>
+          <h3>${this.team} on ${this.day} &nbsp;&nbsp;</h3>
         </header>
         <table id="ScoresTable">
           <tr>

@@ -2,7 +2,7 @@ import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
-import { storeSvc } from '../store/camera';
+import { storeSvc } from '../store/data';
 import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-golf-day-home')
@@ -11,7 +11,7 @@ export class GolfDayHome extends LitElement {
 
   @state() allSubs = new Subscription();
 
-  private pairings$ = storeSvc.pairings$;
+  private schedule = storeSvc.schedule$;
 
   static styles = [
     mvpCss,
@@ -33,9 +33,21 @@ export class GolfDayHome extends LitElement {
 
   constructor() {
     super();
-    storeSvc.getData(GolfDayHome.getTeam());
-    const sub1 = this.pairings$.subscribe(p => {
-      this.pairings = p;
+    const team = GolfDayHome.getTeam();
+    storeSvc.getSchedule(team);
+    const sub1 = this.schedule.subscribe(s => {
+      const pairingsTemp = [];
+
+      Object.entries(s).forEach(([day, pair]) => {
+        let pairing = `${day} => ${team} vs `;
+        Object.entries(pair).forEach(([teamA, teamB]) => {
+          if (teamA === team) pairing += teamB;
+          if (teamB === team) pairing += teamA;
+        });
+
+        pairingsTemp.push(pairing);
+      });
+      this.pairings = pairingsTemp;
     });
 
     this.allSubs.add(sub1);

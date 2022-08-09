@@ -6,7 +6,7 @@ import {
   UserCredential,
 } from 'firebase/auth';
 import { Subscription } from 'rxjs';
-import { storeSvc } from '../store/camera';
+import { storeSvc } from '../store/data';
 
 // const logo = new URL('../../assets/open-wc-logo.svg', import.meta.url).href;
 
@@ -131,7 +131,7 @@ export class Home extends LitElement {
         .replace('woodchoppers.golf+', '')
         .replace('@gmail.com', '')
         .toLowerCase();
-      storeSvc.getData(teamName);
+      storeSvc.getSchedule(teamName);
       const { user } = signInResult;
       console.log('signInResult-user', user);
       this.emailEle.value = '';

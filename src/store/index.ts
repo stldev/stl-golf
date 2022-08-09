@@ -1,3 +1,3 @@
-import { storeSvc } from './camera';
+import { storeSvc } from './data';
 
 storeSvc.init();
