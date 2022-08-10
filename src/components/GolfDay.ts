@@ -49,7 +49,7 @@ export class GolfDay extends LitElement {
         padding: 0;
       }
       table td {
-        padding: 0.4rem 0.8rem;
+        padding: 0.4rem 0.7rem;
       }
     `,
   ];
