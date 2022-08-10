@@ -7,10 +7,6 @@ class StoreService {
 
   private schedulePristine = true;
 
-  private myTeamTodayPristine = true;
-
-  private otherTeamTodayPristine = true;
-
   public currentTeam$ = new ReplaySubject<string>(1);
 
   public schedule$ = new ReplaySubject<any>(1);
@@ -37,11 +33,11 @@ class StoreService {
 
     getAuth().onAuthStateChanged(user => {
       if (user?.email) {
-        this.currentTeam$.next(user.email);
         const teamName = user.email
           .replace('woodchoppers.golf+', '')
           .replace('@gmail.com', '')
           .toLowerCase();
+        this.currentTeam$.next(teamName);
         localStorage.setItem('woodchopper-team', teamName);
       } else {
         this.currentTeam$.next('');
@@ -64,25 +60,19 @@ class StoreService {
   }
 
   getMyTeamToday(team: string, day: string) {
-    if (this.myTeamTodayPristine) {
-      const myTeamTodayDb = ref(getDatabase(), `/${team}/${day}`);
-      onValue(myTeamTodayDb, snapshot => {
-        this.myTeamToday$.next(snapshot.val() || {});
-      });
-    }
-
-    this.myTeamTodayPristine = false;
+    this.myTeamToday$.next({});
+    const myTeamTodayDb = ref(getDatabase(), `/${team}/${day}`);
+    onValue(myTeamTodayDb, snapshot => {
+      this.myTeamToday$.next(snapshot.val() || {});
+    });
   }
 
   getOtherTeamToday(team: string, day: string) {
-    if (this.otherTeamTodayPristine) {
-      const otherTeamTodayDb = ref(getDatabase(), `/${team}/${day}`);
-      onValue(otherTeamTodayDb, snapshot => {
-        this.otherTeamToday$.next(snapshot.val() || {});
-      });
-    }
-
-    this.otherTeamTodayPristine = false;
+    this.otherTeamToday$.next({});
+    const otherTeamTodayDb = ref(getDatabase(), `/${team}/${day}`);
+    onValue(otherTeamTodayDb, snapshot => {
+      this.otherTeamToday$.next(snapshot.val() || {});
+    });
   }
 }
 

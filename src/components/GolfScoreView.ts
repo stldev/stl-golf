@@ -41,11 +41,9 @@ export class GolfScoreView extends LitElement {
     this.player = player;
 
     const sub1 = this.otherTeamToday.subscribe(s => {
-      const holeScores = s[this.hole];
+      const holeScores = s[this.hole] || {};
 
-      if (holeScores) {
-        this.pScore = holeScores[`${player}`] || 0;
-      }
+      this.pScore = holeScores[`${player}`] || 0;
     });
 
     this.allSubs.add(sub1);
