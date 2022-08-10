@@ -41,14 +41,15 @@ export class GolfDay extends LitElement {
     css`
       article {
         text-align: center;
-        margin-top: 3rem;
+        margin-top: 2.25rem;
+        width: 100%;
       }
       header {
         color: blue;
         padding: 0;
       }
       table td {
-        padding: 0.4rem;
+        padding: 0.4rem 0.8rem;
       }
     `,
   ];
@@ -180,7 +181,7 @@ export class GolfDay extends LitElement {
     return html`
       <article>
         <header>
-          <h3>${this.team} on ${this.day} &nbsp;&nbsp;</h3>
+          ${new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString()}
         </header>
         <table id="ScoresTable">
           <tr>

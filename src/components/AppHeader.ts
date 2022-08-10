@@ -2,17 +2,25 @@
 /* eslint-disable lit-a11y/anchor-is-valid */
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
+import { customElement, state, query } from 'lit/decorators.js';
 import { getAuth, signOut } from 'firebase/auth';
+import { Subscription } from 'rxjs';
 import { mvpCss } from '../styles-3rdParty';
+import { storeSvc } from '../store/data';
 
 @customElement('rbb-app-header')
 export class AppHeader extends LitElement {
-  @property({ type: Boolean }) hideButton: boolean = true;
+  @state() hideButton: boolean = true;
+
+  @state() allSubs = new Subscription();
+
+  @state() curTeamName = '';
 
   @query('#mySidenav') _sideNav: HTMLDivElement;
 
   @query('#backdrop') _backDrop: HTMLDivElement;
+
+  private currentTeam = storeSvc.currentTeam$;
 
   static styles = [
     mvpCss,
@@ -130,6 +138,15 @@ export class AppHeader extends LitElement {
     `,
   ];
 
+  constructor() {
+    super();
+    const sub1 = this.currentTeam.subscribe(curTeam => {
+      this.curTeamName = curTeam || '';
+    });
+
+    this.allSubs.add(sub1);
+  }
+
   private openNav() {
     this._sideNav.style.width = '50%'; // opens side navbar by 70 percent
     this._backDrop.style.display = 'block'; // displays overlay
@@ -142,6 +159,7 @@ export class AppHeader extends LitElement {
 
   disconnectedCallback() {
     console.log(`${this.tagName} destroyed!`);
+    this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
@@ -189,7 +207,7 @@ export class AppHeader extends LitElement {
         <span @click="${this.openNav}" class="mobile-nav-open-icon"
           >&#9776;</span
         >
-        &#127794;&#129683; &nbsp;&nbsp;&nbsp;
+        ${this.curTeamName} &nbsp;&nbsp; &#127794;&#129683; &nbsp;
       </nav>
     `;
   }
