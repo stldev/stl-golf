@@ -18,7 +18,7 @@ export class Home extends LitElement {
 
   @state() authLoading = false;
 
-  @state() userEmail = '';
+  @state() curTeamName = '';
 
   @state() allSubs = new Subscription();
 
@@ -30,7 +30,7 @@ export class Home extends LitElement {
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
 
-  private currentUserEmail$ = storeSvc.currentTeam$;
+  private currentTeam = storeSvc.currentTeam$;
 
   static styles = css`
     :host {
@@ -78,10 +78,10 @@ export class Home extends LitElement {
   constructor() {
     super();
     this.authLoading = true;
-    const sub1 = this.currentUserEmail$.subscribe(currentUserEmail => {
+    const sub1 = this.currentTeam.subscribe(curTeam => {
       this.authLoading = false;
-      if (currentUserEmail) {
-        this.userEmail = currentUserEmail;
+      if (curTeam) {
+        this.curTeamName = curTeam;
         this.hasAuth = true;
       } else {
         this.hasAuth = false;
@@ -127,11 +127,7 @@ export class Home extends LitElement {
 
     if (signInResult?.user) {
       this.authLoading = false;
-      const teamName = this.userEmail
-        .replace('woodchoppers.golf+', '')
-        .replace('@gmail.com', '')
-        .toLowerCase();
-      storeSvc.getSchedule(teamName);
+      storeSvc.getSchedule(this.curTeamName);
       const { user } = signInResult;
       console.log('signInResult-user', user);
       this.emailEle.value = '';
@@ -148,11 +144,7 @@ export class Home extends LitElement {
 
   private authDisplay() {
     if (this.hasAuth) {
-      const teamName = this.userEmail
-        .replace('woodchoppers.golf+', '')
-        .replace('@gmail.com', '')
-        .toUpperCase();
-      return html`${teamName}`;
+      return html`${this.curTeamName}`;
     }
     if (this.authLoading) return html`loading...`;
 
