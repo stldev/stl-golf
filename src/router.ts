@@ -2,6 +2,8 @@ import { Route, Router } from '@vaadin/router';
 import { authGuard } from './services/auth-guard';
 import './app';
 import './components/AppHeader';
+import './components/GolfScoreSelect';
+import './components/GolfScoreView';
 
 // https://vaadin.github.io/router/vaadin-router/demo/#vaadin-router-getting-started-demos
 const routes: Route[] = [

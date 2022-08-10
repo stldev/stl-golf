@@ -1,8 +1,6 @@
 /* eslint-disable lit-a11y/click-events-have-key-events */
-import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state, query } from 'lit/decorators.js';
-import { getDatabase, ref, set } from 'firebase/database';
 import { Subscription, combineLatest } from 'rxjs';
 import { storeSvc } from '../store/data';
 import { router } from '../router';
@@ -18,7 +16,7 @@ export class GolfDay extends LitElement {
 
   @state() teamOther = '';
 
-  @state() scoreDb = getDatabase();
+  @state() startingHole = 10;
 
   @state() allSubs = new Subscription();
 
@@ -50,12 +48,7 @@ export class GolfDay extends LitElement {
         padding: 0;
       }
       table td {
-        padding: 0.6rem;
-      }
-      table td span {
-        display: inline-block;
-        margin-bottom: 1rem;
-        font-size: large;
+        padding: 0.4rem;
       }
     `,
   ];
@@ -95,12 +88,14 @@ export class GolfDay extends LitElement {
     const sub1 = this.schedule.subscribe(s => {
       const pair = s[this.day] || {};
 
+      if (pair.isFront) this.startingHole = 1;
+
       Object.entries(pair).forEach(([teamA, teamB]) => {
         if (teamA === this.team) this.teamOther = teamB as string;
         if (teamB === this.team) this.teamOther = teamA as string;
       });
 
-      this.createTable(pair.isFront);
+      // this.createTable(pair.isFront);
       storeSvc.getMyTeamToday(this.team, this.day);
       storeSvc.getOtherTeamToday(this.teamOther, this.day);
 
@@ -125,24 +120,22 @@ export class GolfDay extends LitElement {
     let totalP1 = 0;
     let totalP2 = 0;
     Object.entries(holeAndScore).forEach(([hole, scores]) => {
-      const bothScores = (scores as any).split('-');
-
-      totalP1 += Number(bothScores[0]);
-      totalP2 += Number(bothScores[1]);
+      totalP1 += (scores as any).p1 || 0;
+      totalP2 += (scores as any).p2 || 0;
 
       const p1Ele = this.shadowRoot?.querySelector(
         `#${this.teamOther}-${hole}-p1`
       ) as HTMLSpanElement;
 
       // eslint-disable-next-line prefer-destructuring
-      if (p1Ele) p1Ele.textContent = bothScores[0];
+      if (p1Ele) p1Ele.textContent = (scores as any).p1 || 0;
 
       const p2Ele = this.shadowRoot?.querySelector(
         `#${this.teamOther}-${hole}-p2`
       ) as HTMLSpanElement;
 
       // eslint-disable-next-line prefer-destructuring
-      if (p2Ele) p2Ele.textContent = bothScores[1];
+      if (p2Ele) p2Ele.textContent = (scores as any).p2 || 0;
     });
     this.setTotals('teamOther', totalP1, totalP2);
   }
@@ -151,24 +144,22 @@ export class GolfDay extends LitElement {
     let totalP1 = 0;
     let totalP2 = 0;
     Object.entries(holeAndScore).forEach(([hole, scores]) => {
-      const bothScores = (scores as any).split('-');
-
-      totalP1 += Number(bothScores[0]);
-      totalP2 += Number(bothScores[1]);
+      totalP1 += (scores as any).p1 || 0;
+      totalP2 += (scores as any).p2 || 0;
 
       const p1Ele = this.shadowRoot?.querySelector(
         `#${this.team}-${hole}-p1`
       ) as HTMLSelectElement;
 
       // eslint-disable-next-line prefer-destructuring
-      if (p1Ele) p1Ele.value = bothScores[0];
+      if (p1Ele) p1Ele.value = (scores as any).p1 || 0;
 
       const p2Ele = this.shadowRoot?.querySelector(
         `#${this.team}-${hole}-p2`
       ) as HTMLSelectElement;
 
       // eslint-disable-next-line prefer-destructuring
-      if (p2Ele) p2Ele.value = bothScores[1];
+      if (p2Ele) p2Ele.value = (scores as any).p2 || 0;
     });
     this.setTotals('team', totalP1, totalP2);
   }
@@ -183,76 +174,6 @@ export class GolfDay extends LitElement {
       this.totalTeamOtherP1Ele.textContent = p1.toString();
       this.totalTeamOtherP2Ele.textContent = p2.toString();
     }
-  }
-
-  private createTable(isFront: boolean) {
-    const allOptions = Array(11)
-      .fill('')
-      .map((e, i) => {
-        if (i === 0) return '<option value="0" selected>0</option>';
-        return `<option value="${i}">${i}</option>`;
-      });
-
-    const holesToUse = isFront
-      ? [1, 2, 3, 4, 5, 6, 7, 8, 9]
-      : [10, 11, 12, 13, 14, 15, 16, 17, 18];
-
-    let htmlToUse = '';
-
-    const extraHours = 3600000 * 4;
-    const cutoffTimeInFuture = new Date(
-      new Date(`${this.day}T23:59:00.000Z`).getTime() + extraHours
-    ).getTime();
-    // TODO: put this back in effect after beta testing
-    // const cutoffTimeInPast = new Date(`${this.day}T15:30:00.000Z`).getTime();
-
-    const isDisabledFuture = Date.now() > cutoffTimeInFuture ? 'disabled' : '';
-    // TODO: put this back in effect after beta testing
-    const isDisabledPast = false; // Date.now() < cutoffTimeInPast ? 'disabled' : '';
-
-    holesToUse.forEach(e => {
-      htmlToUse += `<tr>
-      <td>${e}</td>
-      <td><select ${isDisabledFuture || isDisabledPast} id="${
-        this.team
-      }-h${e}-p1">${allOptions}</select></td>
-      <td><select ${isDisabledFuture || isDisabledPast} id="${
-        this.team
-      }-h${e}-p2">${allOptions}</select></td>
-      <td><span id="${this.teamOther}-h${e}-p1">0</span></td>
-      <td><span id="${this.teamOther}-h${e}-p2">0</span></td>
-      </tr>`;
-    });
-
-    this.scoresTableEle.insertAdjacentHTML('beforeend', htmlToUse);
-
-    const selectNodes = this.shadowRoot?.querySelectorAll('select');
-    const selectAry = Array.from(selectNodes);
-    selectAry.forEach(ele => {
-      ele.addEventListener('change', evt => this.onChange(evt), { once: true });
-    });
-  }
-
-  private onChange(e: any) {
-    const changedProps = e.target.id.split('-');
-    // console.log(changedProps);
-    const team = changedProps[0];
-    const hole = changedProps[1];
-    const scoreP1 = (
-      this.shadowRoot?.querySelector(`#${team}-${hole}-p1`) as HTMLSelectElement
-    ).value;
-    const scoreP2 = (
-      this.shadowRoot?.querySelector(`#${team}-${hole}-p2`) as HTMLSelectElement
-    ).value;
-
-    // set(ref(db, '/team7/2022-07-27/h3'), '1-2');
-    set(
-      ref(this.scoreDb, `/${team}/${this.day}/${hole}`),
-      `${scoreP1}-${scoreP2}`
-    ).catch(err => {
-      console.log('Firebase-database-ERROR', err);
-      Router.go(`/golf-day/${this.day}`);
-    });
   }
 
   render() {
@@ -280,6 +201,38 @@ export class GolfDay extends LitElement {
             <td id="total-teamother-p1"></td>
             <td id="total-teamother-p2"></td>
           </tr>
+          ${Array(9)
+            .fill(0)
+            .map(
+              (hole, i) =>
+                html`<tr>
+                  <td style="font-size: 1.5rem;">${i + this.startingHole}</td>
+                  <td>
+                    <rbb-golf-score-select
+                      id="${this.team}-h${i + 1}-p1"
+                      day="${this.day}"
+                    ></rbb-golf-score-select>
+                  </td>
+                  <td>
+                    <rbb-golf-score-select
+                      id="${this.team}-h${i + 1}-p2"
+                      day="${this.day}"
+                    ></rbb-golf-score-select>
+                  </td>
+                  <td>
+                    <rbb-golf-score-view
+                      id="${this.teamOther}-h${i + 1}-p1"
+                      day="${this.day}"
+                    ></rbb-golf-score-view>
+                  </td>
+                  <td>
+                    <rbb-golf-score-view
+                      id="${this.teamOther}-h${i + 1}-p2"
+                      day="${this.day}"
+                    ></rbb-golf-score-view>
+                  </td>
+                </tr>`
+            )}
         </table>
       </article>
     `;
