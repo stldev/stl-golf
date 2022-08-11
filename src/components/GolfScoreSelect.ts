@@ -78,15 +78,13 @@ export class GolfScoreSelect extends LitElement {
   }
 
   render() {
-    const extraHours = 3600000 * 4;
-    const cutoffTimeInFuture = new Date(
-      new Date(`${this.day}T23:59:00.000Z`).getTime() + extraHours
-    ).getTime();
+    const epoch = new Date(`${this.day}T23:59:00.000Z`).getTime();
+    const cutoffTimeInFuture = new Date(epoch + 3600000 * 4).getTime();
 
+    // this means that at about 11pm the day of golf the hole dropdowns are no longer changable
+    const isDisabledFuture = Date.now() > cutoffTimeInFuture;
     // TODO: put this back in effect after beta testing
     // const cutoffTimeInPast = new Date(`${this.day}T15:30:00.000Z`).getTime();
-    const isDisabledFuture = Date.now() > cutoffTimeInFuture ? 'disabled' : '';
-    // TODO: put this back in effect after beta testing
     const isDisabledPast = false; // Date.now() < cutoffTimeInPast ? 'disabled' : '';
 
     if (isDisabledFuture || isDisabledPast)
@@ -94,13 +92,12 @@ export class GolfScoreSelect extends LitElement {
 
     return html`
       <select @change="${e => this.onChange(e)}">
-        <option value="0" selected>0</option>
-        ${Array(10)
+        ${Array(11)
           .fill(0)
           .map((_, i) => {
-            if (i + 1 === this.pScore)
-              return html`<option selected value="${i + 1}">${i + 1}</option>`;
-            return html`<option value="${i + 1}">${i + 1}</option>`;
+            if (i === this.pScore)
+              return html`<option selected value="${i}">${i}</option>`;
+            return html`<option value="${i}">${i}</option>`;
           })}
       </select>
     `;
