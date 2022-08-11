@@ -89,6 +89,9 @@ export class GolfDay extends LitElement {
     const sub1 = this.schedule.subscribe(s => {
       const pair = s[this.day] || {};
 
+      const isRainout = pair.rainOut;
+      console.log('isRainout', isRainout);
+
       if (pair.isFront) this.startingHole = 1;
 
       Object.entries(pair).forEach(([teamA, teamB]) => {
