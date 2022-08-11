@@ -4,7 +4,7 @@ import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state, query } from 'lit/decorators.js';
 import { getAuth, signOut } from 'firebase/auth';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { mvpCss } from '../styles-3rdParty';
 import { storeSvc } from '../store/data';
 
@@ -16,11 +16,15 @@ export class AppHeader extends LitElement {
 
   @state() curTeamName = '';
 
+  @state() dayDisplay = '';
+
   @query('#mySidenav') _sideNav: HTMLDivElement;
 
   @query('#backdrop') _backDrop: HTMLDivElement;
 
   private currentTeam = storeSvc.currentTeam$;
+
+  private theDay = storeSvc.day$;
 
   static styles = [
     mvpCss,
@@ -140,11 +144,19 @@ export class AppHeader extends LitElement {
 
   constructor() {
     super();
-    const sub1 = this.currentTeam.subscribe(curTeam => {
-      this.curTeamName = curTeam || '';
+    const sub = combineLatest({
+      curTeam: this.currentTeam,
+      theDay: this.theDay,
+    }).subscribe(data => {
+      this.curTeamName = data.curTeam || '';
+      this.dayDisplay = data.theDay || '';
     });
+    this.allSubs.add(sub);
+    // const sub1 = this.currentTeam.subscribe(curTeam => {
+    //   this.curTeamName = curTeam || '';
+    // });
 
-    this.allSubs.add(sub1);
+    // this.allSubs.add(sub1);
   }
 
   private openNav() {
@@ -207,7 +219,7 @@ export class AppHeader extends LitElement {
         <span @click="${this.openNav}" class="mobile-nav-open-icon"
           >&#9776;</span
         >
-        ${this.curTeamName} &nbsp;&nbsp; &#127794;&#129683; &nbsp;
+        ${this.dayDisplay} &nbsp;&nbsp;&nbsp;&nbsp; &#127794;&#129683; &nbsp;
       </nav>
     `;
   }

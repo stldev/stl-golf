@@ -36,6 +36,8 @@ export class GolfDay extends LitElement {
 
   private otherTeamToday = storeSvc.otherTeamToday$;
 
+  private theDay = storeSvc.day$;
+
   static styles = [
     mvpCss,
     css`
@@ -71,13 +73,9 @@ export class GolfDay extends LitElement {
   }
 
   disconnectedCallback() {
+    this.theDay.next('');
     console.log(`${this.tagName} destroyed!`);
     this.allSubs.unsubscribe();
-    // const selectNodes = this.shadowRoot?.querySelectorAll('select');
-    // const selectAry = Array.from(selectNodes);
-    // selectAry.forEach(ele => {
-    //   ele.removeEventListener('change', evt => this.onChange(evt));
-    // });
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
@@ -86,6 +84,8 @@ export class GolfDay extends LitElement {
   }
 
   dayHandler() {
+    const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
+    this.theDay.next(theDay);
     const sub1 = this.schedule.subscribe(s => {
       const pair = s[this.day] || {};
 
@@ -183,9 +183,6 @@ export class GolfDay extends LitElement {
   render() {
     return html`
       <article>
-        <header>
-          ${new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString()}
-        </header>
         <table id="ScoresTable">
           <tr>
             <td>Hole</td>
@@ -197,13 +194,6 @@ export class GolfDay extends LitElement {
               ${this.teamOther} <br />
               Player1&nbsp;Player2
             </td>
-          </tr>
-          <tr>
-            <td>total</td>
-            <td id="total-team-p1"></td>
-            <td id="total-team-p2"></td>
-            <td id="total-teamother-p1"></td>
-            <td id="total-teamother-p2"></td>
           </tr>
           ${Array(9)
             .fill(0)
@@ -237,6 +227,13 @@ export class GolfDay extends LitElement {
                   </td>
                 </tr>`
             )}
+          <tr style="font-size: 1.7rem;">
+            <td></td>
+            <td id="total-team-p1"></td>
+            <td id="total-team-p2"></td>
+            <td id="total-teamother-p1"></td>
+            <td id="total-teamother-p2"></td>
+          </tr>
         </table>
       </article>
     `;

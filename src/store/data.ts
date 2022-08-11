@@ -9,6 +9,8 @@ class StoreService {
 
   public currentTeam$ = new ReplaySubject<string>(1);
 
+  public day$ = new ReplaySubject<string>(1);
+
   public schedule$ = new ReplaySubject<any>(1);
 
   public myTeamToday$ = new ReplaySubject<any>(1);
