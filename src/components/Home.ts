@@ -165,8 +165,6 @@ export class Home extends LitElement {
     }
   }
 
-  // ${this.authLoading ? 'disabled' : ''}
-
   render() {
     return html`
       <main>
