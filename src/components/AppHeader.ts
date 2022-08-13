@@ -206,7 +206,7 @@ export class AppHeader extends LitElement {
             Golf Days
           </button>
           <button
-            style="width:100%"
+            style="width:100%; background-color: green;"
             @click="${() => globalThis.location.reload()}"
           >
             Reload App
