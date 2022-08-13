@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, query, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
 import { storeSvc } from '../store/data';
 import { mvpCss } from '../styles-3rdParty';
@@ -11,6 +11,8 @@ export class GolfDayHome extends LitElement {
   @state() pairings = [];
 
   @state() allSubs = new Subscription();
+
+  @query('.rain') rainEle: HTMLTableSectionElement;
 
   private schedule = storeSvc.schedule$;
 
@@ -28,6 +30,44 @@ export class GolfDayHome extends LitElement {
       header {
         color: #383333;
         padding: 0;
+      }
+      hr {
+        width: 50px;
+        border-color: transparent;
+        border-right-color: rgba(255, 255, 255, 0.7);
+        border-right-width: 50px;
+        position: absolute;
+        bottom: 100%;
+        transform-origin: 100% 50%;
+        animation-name: rain;
+        animation-duration: 1s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+      }
+
+      @keyframes rain {
+        from {
+          transform: rotate(105deg) translateX(0);
+        }
+        to {
+          transform: rotate(105deg) translateX(200px);
+        }
+      }
+      .rain {
+        overflow: hidden;
+        position: relative;
+        background-image: linear-gradient(to bottom, #030420, #000000 70%);
+        justify-content: center;
+        align-items: center;
+        border: 2px solid var(--color);
+        color: var(--color-bg);
+        border-radius: var(--border-radius);
+        display: inline-block;
+        font-size: medium;
+        font-weight: bold;
+        line-height: var(--line-height);
+        margin: 0.5rem 0px;
+        padding: 1rem 2rem;
       }
     `,
   ];
@@ -54,7 +94,7 @@ export class GolfDayHome extends LitElement {
           if (teamB === team) acc2 += teamA;
           return acc2;
         }, `${team} vs `);
-        const nineDisplay = pair.isFront ? 'Front 9' : 'Back 9';
+        const nineDisplay = pair.isFront ? 'Front' : 'Back ';
         const rainDisplay = pair.rainOut ? 'Rain out' : '';
         acc.push({ day, match, nineDisplay, rainDisplay, ...pair });
         return acc;
@@ -81,6 +121,22 @@ export class GolfDayHome extends LitElement {
     return localStorage.getItem('woodchopper-team');
   }
 
+  protected firstUpdated() {
+    setTimeout(() => {
+      Array(60)
+        .fill(0)
+        .forEach((_, i) => {
+          const dropLeft = `${Math.floor(Math.random() * window.innerWidth)}px`;
+          const animationDur = `${0.2 + Math.random() * 0.3}s`;
+          const animationDelay = `${Math.random() * 5}s`;
+          setTimeout(() => {
+            const htmlToUse = `<hr style="left:${dropLeft}; animation-duration: ${animationDur}"; animation-delay: ${animationDelay}  />`;
+            this.rainEle?.insertAdjacentHTML('afterbegin', htmlToUse);
+          }, 10 * i);
+        });
+    }, 555);
+  }
+
   render() {
     return html`
       <article>
@@ -88,13 +144,19 @@ export class GolfDayHome extends LitElement {
           <h2>All golf days for ${GolfDayHome.getTeam()}</h2>
         </header>
         <div>
-          ${this.pairings.map(
-            pair =>
-              html`<button @click="${() => this.goTo(pair.day)}">
+          ${this.pairings.map(pair => {
+            if (pair.rainOut) {
+              return html`<section class="rain">
                   ${pair.day} | ${pair.nineDisplay} | ${pair.match}<br />
-                  ${pair.rainDisplay}</button
-                ><br />`
-          )}
+                  ${pair.rainDisplay}
+                </section>
+                <br />`;
+            }
+            return html`<button @click="${() => this.goTo(pair.day)}">
+                ${pair.day} | ${pair.nineDisplay} | ${pair.match}<br />
+                ${pair.rainDisplay}</button
+              ><br />`;
+          })}
         </div>
       </article>
     `;
