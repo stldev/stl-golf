@@ -94,14 +94,13 @@ export class GolfDayHome extends LitElement {
           if (teamB === team) acc2 += teamA;
           return acc2;
         }, `${team} vs `);
-        const nineDisplay = pair.isFront ? 'Front' : 'Back ';
-        const rainDisplay = pair.rainOut ? 'Rain out' : '';
-        acc.push({ day, match, nineDisplay, rainDisplay, ...pair });
+        const nineDisplay = pair.isFront ? 'Front' : 'Back';
+        acc.push({ day, match, nineDisplay, ...pair });
         return acc;
       }, []);
 
       // const aaa2 = new Map(aaa.map(a => [a.day, ...a]));
-      // console.log(aaa2);
+      console.log(pairings);
 
       // const thisDayIsGreaterThanOtherDay = thisDay.localeCompare(otherDay, undefined, { numeric: true });
 
@@ -141,20 +140,18 @@ export class GolfDayHome extends LitElement {
     return html`
       <article>
         <header>
-          <h2>All golf days for ${GolfDayHome.getTeam()}</h2>
+          <h2>All golf days</h2>
         </header>
         <div>
           ${this.pairings.map(pair => {
             if (pair.rainOut) {
               return html`<section class="rain">
-                  ${pair.day} | ${pair.nineDisplay} | ${pair.match}<br />
-                  ${pair.rainDisplay}
+                  ${pair.day} | ${pair.nineDisplay} | ${pair.match}
                 </section>
                 <br />`;
             }
             return html`<button @click="${() => this.goTo(pair.day)}">
-                ${pair.day} | ${pair.nineDisplay} | ${pair.match}<br />
-                ${pair.rainDisplay}</button
+                ${pair.day} | ${pair.nineDisplay} | ${pair.match}</button
               ><br />`;
           })}
         </div>

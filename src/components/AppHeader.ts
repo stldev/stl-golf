@@ -205,6 +205,12 @@ export class AppHeader extends LitElement {
           <button style="width:100%" @click="${() => this.goTo('/golf-day')}">
             Golf Days
           </button>
+          <button
+            style="width:100%"
+            @click="${() => globalThis.location.reload()}"
+          >
+            Reload App
+          </button>
           <a
             class="link-border"
             href="javascript:"
