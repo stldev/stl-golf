@@ -4,14 +4,12 @@ import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state, query } from 'lit/decorators.js';
 import { getAuth, signOut } from 'firebase/auth';
-import { Subscription, combineLatest } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { mvpCss } from '../styles-3rdParty';
 import { storeSvc } from '../store/data';
 
 @customElement('rbb-app-header')
 export class AppHeader extends LitElement {
-  @state() hideButton: boolean = true;
-
   @state() allSubs = new Subscription();
 
   @state() curTeamName = '';
@@ -144,19 +142,26 @@ export class AppHeader extends LitElement {
 
   constructor() {
     super();
-    const sub = combineLatest({
-      curTeam: this.currentTeam,
-      theDay: this.theDay,
-    }).subscribe(data => {
-      this.curTeamName = data.curTeam || '';
-      this.dayDisplay = data.theDay || '';
-    });
-    this.allSubs.add(sub);
-    // const sub1 = this.currentTeam.subscribe(curTeam => {
-    //   this.curTeamName = curTeam || '';
-    // });
+    this.created();
+  }
 
-    // this.allSubs.add(sub1);
+  // onDestroy
+  disconnectedCallback() {
+    this.allSubs.unsubscribe();
+    if (super.disconnectedCallback) super.disconnectedCallback();
+  }
+
+  created() {
+    const sub1 = this.currentTeam.subscribe(curTeam => {
+      this.curTeamName = curTeam || '';
+    });
+
+    const sub2 = this.theDay.subscribe(theDay => {
+      this.dayDisplay = theDay || '';
+    });
+
+    this.allSubs.add(sub1);
+    this.allSubs.add(sub2);
   }
 
   private openNav() {
@@ -167,12 +172,6 @@ export class AppHeader extends LitElement {
   private closeNav() {
     this._sideNav.style.width = '0';
     this._backDrop.style.display = 'none';
-  }
-
-  disconnectedCallback() {
-    console.log(`${this.tagName} destroyed!`);
-    this.allSubs.unsubscribe();
-    if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
   private async signMeOut() {
@@ -219,7 +218,8 @@ export class AppHeader extends LitElement {
         <span @click="${this.openNav}" class="mobile-nav-open-icon"
           >&#9776;</span
         >
-        ${this.dayDisplay} &nbsp;&nbsp;&nbsp;&nbsp; &#127794;&#129683; &nbsp;
+        ${this.dayDisplay} &nbsp; ${this.curTeamName} &nbsp;&nbsp;&nbsp;
+        &#127794;&#129683; &nbsp;
       </nav>
     `;
   }

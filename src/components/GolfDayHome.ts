@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
@@ -33,36 +34,46 @@ export class GolfDayHome extends LitElement {
 
   constructor() {
     super();
+    this.created();
+  }
+
+  // onDestroy
+  disconnectedCallback() {
+    this.allSubs.unsubscribe();
+    if (super.disconnectedCallback) super.disconnectedCallback();
+  }
+
+  created() {
     const team = GolfDayHome.getTeam();
     storeSvc.getSchedule(team);
     const sub1 = this.schedule.subscribe(s => {
-      const pairingsTemp = [];
+      const pairings = Object.entries(s).reduce((acc, [day, pairs]) => {
+        const pair: any = pairs;
+        const match = Object.entries(pair).reduce((acc2, [teamA, teamB]) => {
+          if (teamA === team) acc2 += teamB;
+          if (teamB === team) acc2 += teamA;
+          return acc2;
+        }, `${team} vs `);
+        const nineDisplay = pair.isFront ? 'Front 9' : 'Back 9';
+        const rainDisplay = pair.rainOut ? 'Rain out' : '';
+        acc.push({ day, match, nineDisplay, rainDisplay, ...pair });
+        return acc;
+      }, []);
 
-      Object.entries(s).forEach(([day, pair]) => {
-        let pairing = `${day} => ${team} vs `;
-        Object.entries(pair).forEach(([teamA, teamB]) => {
-          if (teamA === team) pairing += teamB;
-          if (teamB === team) pairing += teamA;
-        });
+      // const aaa2 = new Map(aaa.map(a => [a.day, ...a]));
+      // console.log(aaa2);
 
-        pairingsTemp.push(pairing);
-      });
-      this.pairings = pairingsTemp;
+      // const thisDayIsGreaterThanOtherDay = thisDay.localeCompare(otherDay, undefined, { numeric: true });
+
+      this.pairings = pairings;
     });
 
     this.allSubs.add(sub1);
   }
 
-  disconnectedCallback() {
-    console.log(`${this.tagName} destroyed!`);
-    this.allSubs.unsubscribe();
-    if (super.disconnectedCallback) super.disconnectedCallback();
-  }
-
   // eslint-disable-next-line class-methods-use-this
-  private goTo(pair: string) {
-    const path = `golf-day/${pair.split(' =>')[0]}`;
-
+  private goTo(day: string) {
+    const path = `golf-day/${day}`;
     Router.go(path);
   }
 
@@ -79,7 +90,9 @@ export class GolfDayHome extends LitElement {
         <div>
           ${this.pairings.map(
             pair =>
-              html`<button @click="${() => this.goTo(pair)}">${pair}</button
+              html`<button @click="${() => this.goTo(pair.day)}">
+                  ${pair.day} | ${pair.nineDisplay} | ${pair.match}<br />
+                  ${pair.rainDisplay}</button
                 ><br />`
           )}
         </div>

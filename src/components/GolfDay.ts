@@ -63,20 +63,20 @@ export class GolfDay extends LitElement {
     this.team = team;
   }
 
-  static getTeam() {
-    return localStorage.getItem('woodchopper-team');
-  }
-
   connectedCallback() {
     this.day = this.location.params.day.toString();
     if (super.connectedCallback) super.connectedCallback();
   }
 
+  // onDestroy
   disconnectedCallback() {
     this.theDay.next('');
-    console.log(`${this.tagName} destroyed!`);
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
+  }
+
+  static getTeam() {
+    return localStorage.getItem('woodchopper-team');
   }
 
   protected updated(_changedProps: Map<string | number | symbol, unknown>) {
@@ -228,7 +228,7 @@ export class GolfDay extends LitElement {
                 </tr>`
             )}
           <tr style="font-size: 1.7rem;">
-            <td></td>
+            <td>sum:</td>
             <td id="total-team-p1"></td>
             <td id="total-team-p2"></td>
             <td id="total-teamother-p1"></td>
