@@ -1,17 +1,29 @@
 {
   "rules": {
     ".read": "auth != null",
+    "team1": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team1@gmail.com')"
+    },
+    "team2": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team2@gmail.com')"
+    },
+    "team3": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team3@gmail.com')"
+    },
     "team4": {
       ".write": "auth.token.email.endsWith('woodchoppers.golf+team4@gmail.com')"
     },
     "team5": {
       ".write": "auth.token.email.endsWith('woodchoppers.golf+team5@gmail.com')"
     },
+    "team6": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team6@gmail.com')"
+    },
     "team7": {
       ".write": "auth.token.email.endsWith('woodchoppers.golf+team7@gmail.com')"
     },
-    "team6": {
-      ".write": "auth.token.email.endsWith('woodchoppers.golf+team6@gmail.com')"
+    "team8": {
+      ".write": "auth.token.email.endsWith('woodchoppers.golf+team8@gmail.com')"
     }
   }
 }
