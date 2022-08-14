@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { state, customElement, query } from 'lit/decorators.js';
 import {
   getAuth,
@@ -29,7 +29,33 @@ export class Home extends LitElement {
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
 
-  static styles = [mvpCss];
+  static styles = [
+    mvpCss,
+    css`
+      section {
+        text-align: center;
+      }
+      select,
+      input {
+        margin: auto;
+        padding: 1rem;
+        font-size: x-large;
+      }
+      header h2 {
+        color: green;
+      }
+      #itemsSection {
+        background: white;
+        max-width: 470px;
+        margin: 25px auto 8px;
+        padding: 16px 12px;
+        border-radius: 3px;
+      }
+      #itemsSection {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+      }
+    `,
+  ];
 
   constructor() {
     super();
@@ -120,37 +146,33 @@ export class Home extends LitElement {
       <main>
         <header>
           <h1>Woodchoppers</h1>
+          <h2>${this.authDisplay()}</h2>
+          <h3 id="errorMessage" style="color:red; display: none;">Error</h3>
         </header>
-        <section>
-          <h2 style="max-height: 2rem">${this.authDisplay()}</h2>
+        <section id="loginForm" style="display: none">
+          <select name="teams" id="team-select">
+            <option value="">--Select your team--</option>
+            <option value="1">Team 1</option>
+            <option value="2">Team 2</option>
+            <option value="3">Team 3</option>
+            <option value="4">Team 4</option>
+            <option value="5">Team 5</option>
+            <option value="6">Team 6</option>
+            <option value="7">Team 7</option>
+            <option value="8">Team 8</option>
+          </select>
           <br />
-          <div id="loginForm" style="display: none">
-            <p id="errorMessage" style="color:red; display: none;">Error</p>
-            <br /><br />
-            <select name="teams" id="team-select">
-              <option value="">--Select your team--</option>
-              <option value="1">Team 1</option>
-              <option value="2">Team 2</option>
-              <option value="3">Team 3</option>
-              <option value="4">Team 4</option>
-              <option value="5">Team 5</option>
-              <option value="6">Team 6</option>
-              <option value="7">Team 7</option>
-              <option value="8">Team 8</option>
-            </select>
-            <br /><br />
-            <small style="font-size:11px">4 digit team pin:</small>
+          <small>4 digit team pin:</small>
 
-            <input
-              @keyup=${(e: Event) => this.onChange(e)}
-              type="tel"
-              pattern="[0-9]{4}"
-              size="5"
-              maxlength="4"
-              minlength="4"
-              required
-            />
-          </div>
+          <input
+            @keyup=${(e: Event) => this.onChange(e)}
+            type="tel"
+            pattern="[0-9]{4}"
+            size="5"
+            maxlength="4"
+            minlength="4"
+            required
+          />
         </section>
         <section id="itemsSection" style="display: none">
           <h3><a href="/golf-day">Check out all days</a></h3>

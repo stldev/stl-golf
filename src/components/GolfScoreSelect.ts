@@ -61,16 +61,11 @@ export class GolfScoreSelect extends LitElement {
 
   private onChange(evt: any) {
     const playerScore = Number(evt.target.value);
+    const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`;
 
-    set(
-      ref(
-        this.scoreDb,
-        `/${this.team}/${this.day}/${this.hole}/${this.player}`
-      ),
-      playerScore
-    ).catch(err => {
-      console.log('Firebase-database-ERROR', err);
-      // Router.go(`/golf-day/${this.day}`);
+    set(ref(this.scoreDb, dbUrl), playerScore).catch(err => {
+      storeSvc.errors$.next(err.message);
+      console.log('Firebase-DB-ERROR', err);
     });
   }
 

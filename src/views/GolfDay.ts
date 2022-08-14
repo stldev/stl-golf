@@ -23,6 +23,8 @@ export class GolfDay extends LitElement {
 
   @state() allSubs = new Subscription();
 
+  @state() error = '';
+
   @query('table tbody') scoresTableEle: HTMLTableElement;
 
   @query('#total-team-p1') totalTeamP1Ele: HTMLTableElement;
@@ -69,7 +71,12 @@ export class GolfDay extends LitElement {
       this.course = c;
     });
 
+    const sub2 = storeSvc.errors$.subscribe(error => {
+      this.error = error || '';
+    });
+
     this.allSubs.add(sub1);
+    this.allSubs.add(sub2);
     if (super.connectedCallback) super.connectedCallback();
   }
 
@@ -83,6 +90,7 @@ export class GolfDay extends LitElement {
   // onDestroy
   disconnectedCallback() {
     storeSvc.day$.next('');
+    storeSvc.errors$.next('');
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
@@ -196,6 +204,7 @@ export class GolfDay extends LitElement {
   render() {
     return html`
       <article>
+        ${this.error ? html`<h1>${this.error}</h1>` : ''}
         <table>
           <tr>
             <td>Hole (Par)</td>

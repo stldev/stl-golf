@@ -13,6 +13,8 @@ class StoreService {
 
   public day$ = new ReplaySubject<string>(1);
 
+  public errors$ = new ReplaySubject<string>(1);
+
   public schedule$ = new ReplaySubject<any>(1);
 
   public course$ = new ReplaySubject<any>(1);
