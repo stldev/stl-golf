@@ -12,8 +12,6 @@ import { storeSvc } from '../store/data';
 
 @customElement('rbb-home')
 export class Home extends LitElement {
-  @state() title = 'Woodchoppers';
-
   @state() hasAuth = false;
 
   @state() authLoading = false;
@@ -73,6 +71,9 @@ export class Home extends LitElement {
     #message {
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     }
+    header h1 {
+      padding: 9px 0 0 0;
+    }
   `;
 
   constructor() {
@@ -92,7 +93,6 @@ export class Home extends LitElement {
   }
 
   disconnectedCallback() {
-    console.log(`${this.tagName} destroyed!`);
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
@@ -107,9 +107,7 @@ export class Home extends LitElement {
     }
   }
 
-  protected updated(
-    _changedProps: Map<string | number | symbol, unknown>
-  ): void {
+  protected updated(_changedProps: Map<string | number | symbol, unknown>) {
     if (_changedProps.has('hasAuth')) this.handleAuthLoginDisplay();
   }
 
@@ -128,8 +126,8 @@ export class Home extends LitElement {
     if (signInResult?.user) {
       this.authLoading = false;
       storeSvc.getSchedule(this.curTeamName);
-      const { user } = signInResult;
-      console.log('signInResult-user', user);
+      // const { user } = signInResult;
+      // console.log('signInResult-user', user);
       this.emailEle.value = '';
       this.loginFormEle.style.display = 'none';
       this.hasAuth = true;
@@ -143,11 +141,8 @@ export class Home extends LitElement {
   }
 
   private authDisplay() {
-    if (this.hasAuth) {
-      return html`${this.curTeamName}`;
-    }
+    if (this.hasAuth) return html`${this.curTeamName}`;
     if (this.authLoading) return html`loading...`;
-
     return html`Welcome!`;
   }
 
@@ -168,7 +163,9 @@ export class Home extends LitElement {
   render() {
     return html`
       <main>
-        <h1>${this.title}</h1>
+        <header>
+          <h1>Woodchoppers</h1>
+        </header>
         <section id="message">
           <h2>${this.authDisplay()}</h2>
           <div id="loginForm" style="display: none">
