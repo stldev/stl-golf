@@ -179,8 +179,8 @@ export class AppHeader extends LitElement {
 
   // eslint-disable-next-line class-methods-use-this
   private goTo(path: string) {
-    Router.go(path);
     this.closeNav();
+    Router.go(path);
   }
 
   render() {
