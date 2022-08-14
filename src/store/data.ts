@@ -79,7 +79,6 @@ class StoreService {
   }
 
   getAllTeamsToday(day: string) {
-    let counter = 1;
     const allTeamScores = {};
     const allRefs = Array(8)
       .fill(0)
@@ -91,14 +90,12 @@ class StoreService {
 
     allRefs.forEach(e => {
       onValue(e.dbRef, snapshot => {
-        if (counter === 8) {
+        if (Object.keys(allTeamScores).length === 7) {
           allTeamScores[e.team] = snapshot.val() || {};
           this.allTeamsToday$.next(allTeamScores);
         }
 
         allTeamScores[e.team] = snapshot.val() || {};
-
-        counter += 1;
       });
     });
   }

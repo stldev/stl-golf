@@ -16,8 +16,6 @@ export class GolfDayHome extends LitElement {
 
   @queryAll('header button') tabs: any[];
 
-  private schedule = storeSvc.schedule$;
-
   static styles = [
     mvpCss,
     css`
@@ -88,7 +86,7 @@ export class GolfDayHome extends LitElement {
     const team = localStorage.getItem('woodchopper-team');
     const todayEpoch = Date.now();
 
-    const sub1 = this.schedule.subscribe(s => {
+    const sub1 = storeSvc.schedule$.subscribe(s => {
       const pairings = Object.entries(s).reduce((acc, [day, pairs]) => {
         const pair: any = pairs;
         const match = Object.entries(pair).reduce((acc2, [teamA, teamB]) => {

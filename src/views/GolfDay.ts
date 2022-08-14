@@ -31,14 +31,6 @@ export class GolfDay extends LitElement {
 
   @query('#total-teamother-p2') totalTeamOtherP2Ele: HTMLTableElement;
 
-  private schedule = storeSvc.schedule$;
-
-  private myTeamToday = storeSvc.myTeamToday$;
-
-  private otherTeamToday = storeSvc.otherTeamToday$;
-
-  private theDay = storeSvc.day$;
-
   static styles = [
     mvpCss,
     css`
@@ -69,7 +61,7 @@ export class GolfDay extends LitElement {
 
   // onDestroy
   disconnectedCallback() {
-    this.theDay.next('');
+    storeSvc.day$.next('');
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
@@ -80,12 +72,9 @@ export class GolfDay extends LitElement {
 
   dayHandler() {
     const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
-    this.theDay.next(theDay);
-    const sub1 = this.schedule.subscribe(s => {
+    storeSvc.day$.next(theDay);
+    const sub1 = storeSvc.schedule$.subscribe(s => {
       const pair = s[this.day] || {};
-
-      const isRainout = pair.rainOut;
-      console.log('isRainout', isRainout);
 
       if (pair.isFront) this.startingHole = 1;
 
@@ -94,7 +83,6 @@ export class GolfDay extends LitElement {
         if (teamB === this.team) this.teamOther = teamA as string;
       });
 
-      // this.createTable(pair.isFront);
       storeSvc.getMyTeamToday(this.team, this.day);
       storeSvc.getOtherTeamToday(this.teamOther, this.day);
 
@@ -106,8 +94,8 @@ export class GolfDay extends LitElement {
 
   dataHandler() {
     const sub = combineLatest({
-      myTeam: this.myTeamToday,
-      otherTeam: this.otherTeamToday,
+      myTeam: storeSvc.myTeamToday$,
+      otherTeam: storeSvc.otherTeamToday$,
     }).subscribe(teams => {
       this.setMyTeam(teams.myTeam);
       this.setOtherTeam(teams.otherTeam);

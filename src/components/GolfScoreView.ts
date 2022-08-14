@@ -21,8 +21,6 @@ export class GolfScoreView extends LitElement {
 
   @state() pScore = 0;
 
-  private otherTeamToday = storeSvc.otherTeamToday$;
-
   static styles = [
     mvpCss,
     css`
@@ -40,7 +38,7 @@ export class GolfScoreView extends LitElement {
     this.hole = hole;
     this.player = player;
 
-    const sub1 = this.otherTeamToday.subscribe(s => {
+    const sub1 = storeSvc.otherTeamToday$.subscribe(s => {
       const holeScores = s[this.hole] || {};
 
       this.pScore = holeScores[`${player}`] || 0;

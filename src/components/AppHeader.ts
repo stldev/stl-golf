@@ -20,10 +20,6 @@ export class AppHeader extends LitElement {
 
   @query('#backdrop') _backDrop: HTMLDivElement;
 
-  private currentTeam = storeSvc.currentTeam$;
-
-  private theDay = storeSvc.day$;
-
   static styles = [
     mvpCss,
     css`
@@ -152,11 +148,11 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    const sub1 = this.currentTeam.subscribe(curTeam => {
+    const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.curTeamName = curTeam || '';
     });
 
-    const sub2 = this.theDay.subscribe(theDay => {
+    const sub2 = storeSvc.day$.subscribe(theDay => {
       this.dayDisplay = theDay || '';
     });
 

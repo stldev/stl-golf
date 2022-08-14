@@ -24,8 +24,6 @@ export class GolfScoreSelect extends LitElement {
 
   @state() scoreDb = getDatabase();
 
-  private myTeamToday = storeSvc.myTeamToday$;
-
   static styles = [
     mvpCss,
     css`
@@ -46,7 +44,7 @@ export class GolfScoreSelect extends LitElement {
     this.hole = hole;
     this.player = player;
 
-    const sub1 = this.myTeamToday.subscribe(s => {
+    const sub1 = storeSvc.myTeamToday$.subscribe(s => {
       const holeScores = s[this.hole] || {};
 
       this.pScore = holeScores[`${player}`] || 0;

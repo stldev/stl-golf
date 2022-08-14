@@ -28,8 +28,6 @@ export class Home extends LitElement {
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
 
-  private currentTeam = storeSvc.currentTeam$;
-
   static styles = css`
     :host {
       display: flex;
@@ -79,7 +77,7 @@ export class Home extends LitElement {
   constructor() {
     super();
     this.authLoading = true;
-    const sub1 = this.currentTeam.subscribe(curTeam => {
+    const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.authLoading = false;
       if (curTeam) {
         this.curTeamName = curTeam;
