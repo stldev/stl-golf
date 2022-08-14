@@ -19,6 +19,8 @@ export class GolfDay extends LitElement {
 
   @state() startingHole = 10;
 
+  @state() course = null;
+
   @state() allSubs = new Subscription();
 
   @query('#ScoresTable tbody') scoresTableEle: HTMLTableElement;
@@ -44,7 +46,7 @@ export class GolfDay extends LitElement {
         padding: 0;
       }
       table td {
-        padding: 0.4rem 0.7rem;
+        padding: 0.3rem 0.6rem;
       }
     `,
   ];
@@ -56,6 +58,11 @@ export class GolfDay extends LitElement {
 
   connectedCallback() {
     this.day = this.location.params.day.toString();
+    const sub1 = storeSvc.course$.subscribe(c => {
+      this.course = c;
+    });
+
+    this.allSubs.add(sub1);
     if (super.connectedCallback) super.connectedCallback();
   }
 
@@ -173,12 +180,22 @@ export class GolfDay extends LitElement {
     Router.go(`/golf-day/${this.day}/game-day`);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private getHoleInfo(holeNumber: number) {
+    if (!this.course) return 'foo';
+    console.log('wwwwwwwwwwwwwwwwwwwwww');
+    console.log(holeNumber);
+    console.log(this.course);
+    if (this.course[`h${holeNumber}`]) return this.course[`h${holeNumber}`].par;
+    return '';
+  }
+
   render() {
     return html`
       <article>
         <table id="ScoresTable">
           <tr>
-            <td>Hole</td>
+            <td>Hole (Par)</td>
             <td style="color: blue; font-weight: bold;" colspan="2">
               ${this.team} <br />
               Player1&nbsp;Player2
@@ -193,7 +210,13 @@ export class GolfDay extends LitElement {
             .map(
               (hole, i) =>
                 html`<tr>
-                  <td style="font-size: 1.5rem;">${i + this.startingHole}</td>
+                  <td
+                    class="h${i + this.startingHole}"
+                    style="font-size: 1.5rem;"
+                  >
+                    ${i + this.startingHole}
+                    (${this.getHoleInfo(i + this.startingHole)})
+                  </td>
                   <td>
                     <rbb-golf-score-select
                       id="${this.team}-h${i + 1}-p1"

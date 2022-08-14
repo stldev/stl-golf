@@ -7,11 +7,15 @@ class StoreService {
 
   private schedulePristine = true;
 
+  private coursePristine = true;
+
   public currentTeam$ = new ReplaySubject<string>(1);
 
   public day$ = new ReplaySubject<string>(1);
 
   public schedule$ = new ReplaySubject<any>(1);
+
+  public course$ = new ReplaySubject<any>(1);
 
   public myTeamToday$ = new ReplaySubject<any>(1);
 
@@ -47,6 +51,17 @@ class StoreService {
         localStorage.removeItem('woodchopper-team');
       }
     });
+  }
+
+  getCourse() {
+    if (this.coursePristine) {
+      const courseDb = ref(getDatabase(), `/course`);
+      onValue(courseDb, snapshot => {
+        this.course$.next(snapshot.val() || {});
+      });
+
+      this.coursePristine = false;
+    }
   }
 
   getSchedule(team: string) {
