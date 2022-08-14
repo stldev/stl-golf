@@ -91,11 +91,11 @@ class StoreService {
     allRefs.forEach(e => {
       onValue(e.dbRef, snapshot => {
         if (Object.keys(allTeamScores).length === 7) {
-          allTeamScores[e.team] = snapshot.val() || {};
+          allTeamScores[e.team] = snapshot.val();
           this.allTeamsToday$.next(allTeamScores);
         }
 
-        allTeamScores[e.team] = snapshot.val() || {};
+        allTeamScores[e.team] = snapshot.val();
       });
     });
   }
