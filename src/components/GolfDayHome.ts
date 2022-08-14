@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, query, state } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
 import { storeSvc } from '../store/data';
 import { mvpCss } from '../styles-3rdParty';
@@ -12,8 +12,6 @@ export class GolfDayHome extends LitElement {
 
   @state() allSubs = new Subscription();
 
-  @query('.rain') rainEle: HTMLTableSectionElement;
-
   private schedule = storeSvc.schedule$;
 
   static styles = [
@@ -22,10 +20,6 @@ export class GolfDayHome extends LitElement {
       article {
         text-align: center;
         margin-top: 3rem;
-      }
-      ul {
-        width: 20rem;
-        margin: 0 auto;
       }
       header {
         color: #383333;
@@ -84,8 +78,9 @@ export class GolfDayHome extends LitElement {
   }
 
   created() {
-    const team = GolfDayHome.getTeam();
-    storeSvc.getSchedule(team);
+    const team = localStorage.getItem('woodchopper-team');
+    const todayEpoch = Date.now();
+
     const sub1 = this.schedule.subscribe(s => {
       const pairings = Object.entries(s).reduce((acc, [day, pairs]) => {
         const pair: any = pairs;
@@ -99,10 +94,34 @@ export class GolfDayHome extends LitElement {
         return acc;
       }, []);
 
-      // const aaa2 = new Map(aaa.map(a => [a.day, ...a]));
-      console.log(pairings);
+      pairings.sort((a, b) =>
+        b.day.localeCompare(a.day, undefined, { numeric: true })
+      );
 
-      // const thisDayIsGreaterThanOtherDay = thisDay.localeCompare(otherDay, undefined, { numeric: true });
+      pairings.forEach(p => {
+        const dayToTest = new Date(`${p.day}T12:00:00.000Z`).getTime();
+        if (todayEpoch > dayToTest) {
+          p.state = 'past';
+        }
+        if (todayEpoch < dayToTest) {
+          p.state = 'future';
+        }
+      });
+
+      const mostRecentPast = pairings.findIndex(t => t.state === 'past');
+
+      if (pairings[mostRecentPast - 1])
+        pairings[mostRecentPast - 1].state = 'current';
+
+      // today - golfDay = if negative number it is in future
+      // today - golfDay = if positive number it is either past or same day
+      // if positive number then check:
+      // var today = new Date().toISOString()
+      // today.split('T')[0] === '2022-08-13' = if match then we know
+      // Date.now() - 6 days ago = get list of all those future days and sort by newest and take top 1
+      // ---> all other future golf days are in the distant future
+
+      console.log(pairings);
 
       this.pairings = pairings;
     });
@@ -116,37 +135,30 @@ export class GolfDayHome extends LitElement {
     Router.go(path);
   }
 
-  static getTeam() {
-    return localStorage.getItem('woodchopper-team');
-  }
-
-  protected firstUpdated() {
-    setTimeout(() => {
-      Array(60)
-        .fill(0)
-        .forEach((_, i) => {
-          const dropLeft = `${Math.floor(Math.random() * window.innerWidth)}px`;
-          const animationDur = `${0.2 + Math.random() * 0.3}s`;
-          const animationDelay = `${Math.random() * 5}s`;
-          setTimeout(() => {
-            const htmlToUse = `<hr style="left:${dropLeft}; animation-duration: ${animationDur}"; animation-delay: ${animationDelay}  />`;
-            this.rainEle?.insertAdjacentHTML('afterbegin', htmlToUse);
-          }, 10 * i);
-        });
-    }, 555);
-  }
-
   render() {
     return html`
       <article>
         <header>
-          <h2>All golf days</h2>
+          <h2>Current</h2>
         </header>
         <div>
           ${this.pairings.map(pair => {
             if (pair.rainOut) {
               return html`<section class="rain">
                   ${pair.day} | ${pair.nineDisplay} | ${pair.match}
+                  ${Array(60)
+                    .fill(0)
+                    .map(() => {
+                      const dropLeft = `${Math.floor(
+                        Math.random() * window.innerWidth
+                      )}px`;
+                      const animationDur = `${0.2 + Math.random() * 0.3}s`;
+                      const animationDelay = `${Math.random() * 5}s`;
+
+                      return html`<hr
+                        style="left:${dropLeft}; animation-duration: ${animationDur}; animation-delay: ${animationDelay}"
+                      />`;
+                    })}
                 </section>
                 <br />`;
             }
