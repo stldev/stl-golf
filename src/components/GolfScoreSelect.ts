@@ -57,7 +57,6 @@ export class GolfScoreSelect extends LitElement {
   }
 
   disconnectedCallback() {
-    console.log(`${this.tagName} destroyed!`);
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
