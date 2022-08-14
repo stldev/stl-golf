@@ -77,13 +77,7 @@
         "error"
       ],
       "import/no-unresolved": "off",
-      "import/extensions": [
-        "warn",
-        "always",
-        {
-          "ignorePackages": true
-        }
-      ]
+      "import/extensions": "off"
     }
   },
   "prettier": {
