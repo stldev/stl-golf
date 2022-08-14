@@ -211,12 +211,13 @@ export class AppHeader extends LitElement {
           >
             Reload App
           </button>
-          <a
-            class="link-border"
-            href="javascript:"
+
+          <button
+            style="width:100%; background-color: red;"
             @click="${() => this.signMeOut()}"
-            >Sign out</a
           >
+            Sign out
+          </button>
         </div>
       </div>
       <div class="backdrop-container" id="backdrop"></div>
