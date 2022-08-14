@@ -10,6 +10,8 @@ import { mvpCss } from '../styles-3rdParty';
 export class GolfDayHome extends LitElement {
   @state() pairings = [];
 
+  @state() pairingsByState = [];
+
   @state() allSubs = new Subscription();
 
   private schedule = storeSvc.schedule$;
@@ -123,7 +125,8 @@ export class GolfDayHome extends LitElement {
 
       console.log(pairings);
 
-      this.pairings = pairings;
+      this.pairings = [...pairings];
+      this.filterDays('current');
     });
 
     this.allSubs.add(sub1);
@@ -135,30 +138,67 @@ export class GolfDayHome extends LitElement {
     Router.go(path);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private makeItRain() {
+    return Array(60)
+      .fill(0)
+      .map(() => {
+        const dropLeft = `${Math.floor(Math.random() * window.innerWidth)}px`;
+        const animationDur = `${0.2 + Math.random() * 0.3}s`;
+        const animationDelay = `${Math.random() * 5}s`;
+
+        return html`<hr
+          style="left:${dropLeft}; animation-duration: ${animationDur}; animation-delay: ${animationDelay}"
+        />`;
+      });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private filterDays(itemState: string) {
+    if (itemState === 'all') this.pairingsByState = [...this.pairings];
+
+    if (itemState !== 'all')
+      this.pairingsByState = this.pairings.filter(f => f.state === itemState);
+  }
+
   render() {
     return html`
       <article>
         <header>
-          <h2>Current</h2>
+          <button
+            @click="${() => this.filterDays('current')}"
+            style="padding: 0.25rem"
+          >
+            Current
+          </button>
+          &nbsp;&nbsp;
+          <button
+            @click="${() => this.filterDays('future')}"
+            style="padding: 0.25rem"
+          >
+            Future
+          </button>
+          &nbsp;&nbsp;
+          <button
+            @click="${() => this.filterDays('past')}"
+            style="padding: 0.25rem"
+          >
+            &nbsp; Past &nbsp;
+          </button>
+          &nbsp;&nbsp;
+          <button
+            @click="${() => this.filterDays('all')}"
+            style="padding: 0.25rem"
+          >
+            &nbsp; All &nbsp;
+          </button>
         </header>
         <div>
-          ${this.pairings.map(pair => {
+          ${this.pairingsByState.map(pair => {
             if (pair.rainOut) {
               return html`<section class="rain">
                   ${pair.day} | ${pair.nineDisplay} | ${pair.match}
-                  ${Array(60)
-                    .fill(0)
-                    .map(() => {
-                      const dropLeft = `${Math.floor(
-                        Math.random() * window.innerWidth
-                      )}px`;
-                      const animationDur = `${0.2 + Math.random() * 0.3}s`;
-                      const animationDelay = `${Math.random() * 5}s`;
-
-                      return html`<hr
-                        style="left:${dropLeft}; animation-duration: ${animationDur}; animation-delay: ${animationDelay}"
-                      />`;
-                    })}
+                  ${this.makeItRain()}
                 </section>
                 <br />`;
             }
