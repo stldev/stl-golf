@@ -44,9 +44,7 @@ const routes: Route[] = [
             path: '/',
             component: 'rbb-golf-day-home',
             action: async () => {
-              await import('./components/GolfDayHome').catch(err =>
-                console.log('routerERROR:', err)
-              );
+              await import('./components/GolfDayHome');
             },
           },
           {
