@@ -68,7 +68,7 @@ class StoreService {
     if (this.schedulePristine && team) {
       const thisYear = new Date().getFullYear();
 
-      const scheduleDb = ref(getDatabase(), `/${thisYear}-schedule`);
+      const scheduleDb = ref(getDatabase(), `/schedules/${thisYear}`);
       onValue(scheduleDb, snapshot => {
         this.schedule$.next(snapshot.val() || {});
       });

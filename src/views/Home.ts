@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 import { state, customElement, query } from 'lit/decorators.js';
 import {
   getAuth,
@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth';
 import { Subscription } from 'rxjs';
 import { storeSvc } from '../store/data';
+import { mvpCss } from '../styles-3rdParty';
 
 // const logo = new URL('../../assets/open-wc-logo.svg', import.meta.url).href;
 
@@ -28,51 +29,7 @@ export class Home extends LitElement {
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
 
-  static styles = css`
-    :host {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      font-size: calc(10px + 2vmin);
-      color: #1a2b42;
-      max-width: 960px;
-      margin: 0 auto;
-      text-align: center;
-      background-color: var(--rbb-cleaning-background-color);
-    }
-
-    main {
-      flex-grow: 1;
-    }
-
-    #message,
-    #itemsSection {
-      background: white;
-      max-width: 470px;
-      margin: 25px auto 8px;
-      padding: 16px 12px;
-      border-radius: 3px;
-    }
-    #message h2 {
-      color: #ffa100;
-      font-weight: bold;
-      font-size: 16px;
-      margin: 0 0 8px;
-    }
-    #message p {
-      line-height: 140%;
-      margin: 16px 0 24px;
-      font-size: 14px;
-    }
-    #itemsSection,
-    #message {
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    }
-    header h1 {
-      padding: 9px 0 0 0;
-    }
-  `;
+  static styles = [mvpCss];
 
   constructor() {
     super();
@@ -164,10 +121,12 @@ export class Home extends LitElement {
         <header>
           <h1>Woodchoppers</h1>
         </header>
-        <section id="message">
-          <h2>${this.authDisplay()}</h2>
+        <section>
+          <h2 style="max-height: 2rem">${this.authDisplay()}</h2>
+          <br />
           <div id="loginForm" style="display: none">
             <p id="errorMessage" style="color:red; display: none;">Error</p>
+            <br /><br />
             <select name="teams" id="team-select">
               <option value="">--Select your team--</option>
               <option value="1">Team 1</option>
