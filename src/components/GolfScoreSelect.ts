@@ -29,11 +29,11 @@ export class GolfScoreSelect extends LitElement {
     css`
       span {
         display: inline-block;
-        margin-bottom: 1rem;
-        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
       }
       select {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
       }
     `,
   ];

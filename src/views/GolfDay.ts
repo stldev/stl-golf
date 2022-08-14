@@ -23,7 +23,7 @@ export class GolfDay extends LitElement {
 
   @state() allSubs = new Subscription();
 
-  @query('#ScoresTable tbody') scoresTableEle: HTMLTableElement;
+  @query('table tbody') scoresTableEle: HTMLTableElement;
 
   @query('#total-team-p1') totalTeamP1Ele: HTMLTableElement;
 
@@ -39,14 +39,21 @@ export class GolfDay extends LitElement {
       article {
         text-align: center;
         margin-top: 2.25rem;
-        width: 100%;
       }
       header {
         color: blue;
         padding: 0;
       }
+      table {
+        border: none;
+      }
+      table tr {
+        padding: 0;
+        margin: 0;
+      }
       table td {
         padding: 0.3rem 0.6rem;
+        width: 98%;
       }
     `,
   ];
@@ -182,18 +189,14 @@ export class GolfDay extends LitElement {
 
   // eslint-disable-next-line class-methods-use-this
   private getHoleInfo(holeNumber: number) {
-    if (!this.course) return 'foo';
-    console.log('wwwwwwwwwwwwwwwwwwwwww');
-    console.log(holeNumber);
-    console.log(this.course);
-    if (this.course[`h${holeNumber}`]) return this.course[`h${holeNumber}`].par;
-    return '';
+    if (!this.course) return '';
+    return this.course[`h${holeNumber}`]?.par || '';
   }
 
   render() {
     return html`
       <article>
-        <table id="ScoresTable">
+        <table>
           <tr>
             <td>Hole (Par)</td>
             <td style="color: blue; font-weight: bold;" colspan="2">
@@ -212,7 +215,7 @@ export class GolfDay extends LitElement {
                 html`<tr>
                   <td
                     class="h${i + this.startingHole}"
-                    style="font-size: 1.5rem;"
+                    style="font-size: 1.25rem;"
                   >
                     ${i + this.startingHole}
                     (${this.getHoleInfo(i + this.startingHole)})
@@ -243,7 +246,7 @@ export class GolfDay extends LitElement {
                   </td>
                 </tr>`
             )}
-          <tr style="font-size: 1.7rem;">
+          <tr style="font-size: 1.5rem;">
             <td>sum:</td>
             <td id="total-team-p1"></td>
             <td id="total-team-p2"></td>
