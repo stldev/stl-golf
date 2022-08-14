@@ -1,4 +1,5 @@
 /* eslint-disable lit-a11y/click-events-have-key-events */
+import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state, query } from 'lit/decorators.js';
 import { Subscription, combineLatest } from 'rxjs';
@@ -174,6 +175,11 @@ export class GolfDay extends LitElement {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  private goToGameDay() {
+    Router.go(`/golf-day/${this.day}/game-day`);
+  }
+
   render() {
     return html`
       <article>
@@ -229,6 +235,12 @@ export class GolfDay extends LitElement {
             <td id="total-teamother-p2"></td>
           </tr>
         </table>
+        <br />
+        <button style="width:50%" @click="${() => this.goToGameDay()}">
+          Game Day View
+        </button>
+        <br />
+        <br />
       </article>
     `;
   }

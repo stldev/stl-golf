@@ -17,6 +17,8 @@ class StoreService {
 
   public otherTeamToday$ = new ReplaySubject<any>(1);
 
+  public allTeamsToday$ = new ReplaySubject<any>(1);
+
   constructor() {
     this.team = localStorage.getItem('woodchopper-team') || '';
   }
@@ -73,6 +75,31 @@ class StoreService {
     const otherTeamTodayDb = ref(getDatabase(), `/${team}/${day}`);
     onValue(otherTeamTodayDb, snapshot => {
       this.otherTeamToday$.next(snapshot.val() || {});
+    });
+  }
+
+  getAllTeamsToday(day: string) {
+    let counter = 1;
+    const allTeamScores = {};
+    const allRefs = Array(8)
+      .fill(0)
+      .map((_, i) => {
+        const team = `team${i + 1}`;
+        const dbRef = ref(getDatabase(), `/team${i + 1}/${day}`);
+        return { dbRef, team };
+      });
+
+    allRefs.forEach(e => {
+      onValue(e.dbRef, snapshot => {
+        if (counter === 8) {
+          allTeamScores[e.team] = snapshot.val() || {};
+          this.allTeamsToday$.next(allTeamScores);
+        }
+
+        allTeamScores[e.team] = snapshot.val() || {};
+
+        counter += 1;
+      });
     });
   }
 }
