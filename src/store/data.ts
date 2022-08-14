@@ -23,7 +23,6 @@ class StoreService {
 
   init() {
     this.authHandler(this.team);
-    if (this.team) this.getSchedule(this.team);
   }
 
   authHandler(team: string) {

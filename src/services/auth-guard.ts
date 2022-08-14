@@ -1,7 +1,12 @@
+import { storeSvc } from '../store/data';
+
 export async function authGuard(context: any, commands: any) {
-  const curUser = localStorage.getItem('woodchopper-team');
-  console.log('authGuard-curUser', curUser);
-  if (curUser) return undefined;
+  const team = localStorage.getItem('woodchopper-team');
+  console.log('authGuard-team', team);
+  if (team) {
+    storeSvc.getSchedule(team);
+    return undefined;
+  }
 
   console.log('User not authorized', context.pathname);
   return commands.redirect('/home');

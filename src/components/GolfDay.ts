@@ -58,9 +58,7 @@ export class GolfDay extends LitElement {
 
   constructor() {
     super();
-    const team = GolfDay.getTeam();
-    storeSvc.getSchedule(team);
-    this.team = team;
+    this.team = localStorage.getItem('woodchopper-team');
   }
 
   connectedCallback() {
@@ -73,10 +71,6 @@ export class GolfDay extends LitElement {
     this.theDay.next('');
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
-  }
-
-  static getTeam() {
-    return localStorage.getItem('woodchopper-team');
   }
 
   protected updated(_changedProps: Map<string | number | symbol, unknown>) {
