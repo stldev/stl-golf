@@ -22,8 +22,6 @@ export class GolfScoreSelect extends LitElement {
 
   @state() pScore = 0;
 
-  @state() scoreDb = getDatabase();
-
   static styles = [
     mvpCss,
     css`
@@ -60,10 +58,11 @@ export class GolfScoreSelect extends LitElement {
   }
 
   private onChange(evt: any) {
+    storeSvc.errors$.next('onChange-fired');
     const playerScore = Number(evt.target.value);
     const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`;
 
-    set(ref(this.scoreDb, dbUrl), playerScore).catch(err => {
+    set(ref(getDatabase(), dbUrl), playerScore).catch(err => {
       storeSvc.errors$.next(err.message);
       console.log('Firebase-DB-ERROR', err);
     });

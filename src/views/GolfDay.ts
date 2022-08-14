@@ -204,7 +204,6 @@ export class GolfDay extends LitElement {
   render() {
     return html`
       <article>
-        ${this.error ? html`<h1>${this.error}</h1>` : ''}
         <table>
           <tr>
             <td>Hole (Par)</td>
@@ -267,6 +266,9 @@ export class GolfDay extends LitElement {
         <button style="width:50%" @click="${() => this.goToGameDay()}">
           Game Day View
         </button>
+        <br />
+        <br />
+        ${this.error ? html`<h1>${this.error}</h1>` : ''}
         <br />
         <br />
       </article>
