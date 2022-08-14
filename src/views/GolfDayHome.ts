@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, queryAll, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
 import { storeSvc } from '../store/data';
 import { mvpCss } from '../styles-3rdParty';
@@ -13,6 +13,8 @@ export class GolfDayHome extends LitElement {
   @state() pairingsByState = [];
 
   @state() allSubs = new Subscription();
+
+  @queryAll('header button') tabs: any[];
 
   private schedule = storeSvc.schedule$;
 
@@ -65,6 +67,9 @@ export class GolfDayHome extends LitElement {
         margin: 0.5rem 0px;
         padding: 1rem 2rem;
       }
+      .tab-active {
+        border: 5px black solid;
+      }
     `,
   ];
 
@@ -115,18 +120,8 @@ export class GolfDayHome extends LitElement {
       if (pairings[mostRecentPast - 1])
         pairings[mostRecentPast - 1].state = 'current';
 
-      // today - golfDay = if negative number it is in future
-      // today - golfDay = if positive number it is either past or same day
-      // if positive number then check:
-      // var today = new Date().toISOString()
-      // today.split('T')[0] === '2022-08-13' = if match then we know
-      // Date.now() - 6 days ago = get list of all those future days and sort by newest and take top 1
-      // ---> all other future golf days are in the distant future
-
-      console.log(pairings);
-
       this.pairings = [...pairings];
-      this.filterDays('current');
+      this.filterDays(null, 'current');
     });
 
     this.allSubs.add(sub1);
@@ -154,7 +149,13 @@ export class GolfDayHome extends LitElement {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private filterDays(itemState: string) {
+  private filterDays(evt: any, itemState: string) {
+    if (evt?.target) {
+      // eslint-disable-next-line no-return-assign
+      this.tabs.forEach(tab => (tab.className = ''));
+      evt.target.className = 'tab-active';
+    }
+
     if (itemState === 'all') this.pairingsByState = [...this.pairings];
 
     if (itemState !== 'all')
@@ -166,28 +167,29 @@ export class GolfDayHome extends LitElement {
       <article>
         <header>
           <button
-            @click="${() => this.filterDays('current')}"
+            class="tab-active"
+            @click="${e => this.filterDays(e, 'current')}"
             style="padding: 0.25rem"
           >
             Current
           </button>
           &nbsp;&nbsp;
           <button
-            @click="${() => this.filterDays('future')}"
+            @click="${e => this.filterDays(e, 'future')}"
             style="padding: 0.25rem"
           >
             Future
           </button>
           &nbsp;&nbsp;
           <button
-            @click="${() => this.filterDays('past')}"
+            @click="${e => this.filterDays(e, 'past')}"
             style="padding: 0.25rem"
           >
             &nbsp; Past &nbsp;
           </button>
           &nbsp;&nbsp;
           <button
-            @click="${() => this.filterDays('all')}"
+            @click="${e => this.filterDays(e, 'all')}"
             style="padding: 0.25rem"
           >
             &nbsp; All &nbsp;

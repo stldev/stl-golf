@@ -33,7 +33,7 @@ const routes: Route[] = [
         path: 'home',
         component: 'rbb-home',
         action: async () => {
-          await import('./components/Home');
+          await import('./views/Home');
         },
       },
       {
@@ -44,14 +44,21 @@ const routes: Route[] = [
             path: '/',
             component: 'rbb-golf-day-home',
             action: async () => {
-              await import('./components/GolfDayHome');
+              await import('./views/GolfDayHome');
+            },
+          },
+          {
+            path: '/:day/game-day',
+            component: 'rbb-game-day',
+            action: async () => {
+              await import('./views/GameDay');
             },
           },
           {
             path: '/:day',
             component: 'rbb-golf-day',
             action: async () => {
-              await import('./components/GolfDay');
+              await import('./views/GolfDay');
             },
           },
         ],
@@ -62,7 +69,7 @@ const routes: Route[] = [
     path: '(.*)',
     component: 'not-found',
     action: async () => {
-      await import('./components/NotFound');
+      await import('./views/NotFound');
     },
   },
 ];
