@@ -59,6 +59,13 @@ export class GolfDay extends LitElement {
     if (super.connectedCallback) super.connectedCallback();
   }
 
+  protected firstUpdated() {
+    const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
+    setTimeout(() => {
+      storeSvc.day$.next(theDay);
+    }, 50);
+  }
+
   // onDestroy
   disconnectedCallback() {
     storeSvc.day$.next('');
@@ -71,8 +78,6 @@ export class GolfDay extends LitElement {
   }
 
   dayHandler() {
-    const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
-    storeSvc.day$.next(theDay);
     const sub1 = storeSvc.schedule$.subscribe(s => {
       const pair = s[this.day] || {};
 

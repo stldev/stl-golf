@@ -39,12 +39,20 @@ export class GameDay extends LitElement {
 
   connectedCallback() {
     this.day = this.location.params.day.toString();
+
     const sub1 = storeSvc.schedule$.subscribe(s => {
       const pair = s[this.day] || {};
       if (pair.isFront) this.startingHole = 1;
     });
     this.allSubs.add(sub1);
     if (super.connectedCallback) super.connectedCallback();
+  }
+
+  protected firstUpdated() {
+    const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
+    setTimeout(() => {
+      storeSvc.day$.next(theDay);
+    }, 50);
   }
 
   // onDestroy
@@ -59,8 +67,6 @@ export class GameDay extends LitElement {
   }
 
   dayHandler() {
-    const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
-    storeSvc.day$.next(theDay);
     storeSvc.getAllTeamsToday(this.day);
   }
 
