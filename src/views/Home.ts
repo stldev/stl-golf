@@ -170,10 +170,14 @@ export class Home extends LitElement {
             <p id="errorMessage" style="color:red; display: none;">Error</p>
             <select name="teams" id="team-select">
               <option value="">--Select your team--</option>
+              <option value="1">Team 1</option>
+              <option value="2">Team 2</option>
+              <option value="3">Team 3</option>
               <option value="4">Team 4</option>
               <option value="5">Team 5</option>
               <option value="6">Team 6</option>
               <option value="7">Team 7</option>
+              <option value="8">Team 8</option>
             </select>
             <br /><br />
             <small style="font-size:11px">4 digit team pin:</small>
