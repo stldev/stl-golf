@@ -172,6 +172,13 @@ export class AppHeader extends LitElement {
     if (swReg?.waiting) this.newUpdateReady = true;
   }
 
+  async checkSvcWorkerOnServer() {
+    const swReg = await navigator.serviceWorker.getRegistration();
+    console.log('checkSvcWorkerOnServer-FIRED');
+
+    if (swReg) swReg.update();
+  }
+
   async applyUpdate() {
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -185,6 +192,7 @@ export class AppHeader extends LitElement {
   created() {
     this.setSvcWorker();
     setInterval(() => {
+      this.checkSvcWorkerOnServer();
       this.checkSvcWorker();
     }, 9999);
 
