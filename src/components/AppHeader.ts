@@ -166,10 +166,16 @@ export class AppHeader extends LitElement {
     // give a bit of breathing room
 
     if (globalThis.ApplePaySession) {
-      await new Promise(resolve => setTimeout(() => resolve(''), 750));
+      await new Promise(resolve => setTimeout(() => resolve(''), 650));
+      globalThis.location.reload();
+    }
+
+    if (!globalThis.ApplePaySession) {
+      setTimeout(() => {
+        globalThis.location.reload();
+      }, 650);
     }
     console.log('applyUpdate-END-delay');
-    globalThis.location.reload();
   }
 
   created() {
