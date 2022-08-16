@@ -167,7 +167,7 @@ export class AppHeader extends LitElement {
 
   async checkSvcWorker() {
     const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('checkSvcWorker-swReg', swReg);
+    console.log('checkSvcWorker-swReg-FIRED');
 
     if (swReg.waiting) this.newUpdateReady = true;
   }
@@ -183,7 +183,6 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    console.log('APP-HEADER-created!');
     this.setSvcWorker();
     setInterval(() => {
       this.checkSvcWorker();
@@ -264,7 +263,7 @@ export class AppHeader extends LitElement {
         >
         ${this.newUpdateReady
           ? html`<button
-              style="padding: 0.25rem"
+              style="padding: 0.1rem"
               @click="${() => this.applyUpdate()}"
             >
               apply update
