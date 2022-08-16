@@ -16,6 +16,8 @@ export class AppHeader extends LitElement {
 
   @state() dayDisplay = '';
 
+  @state() newUpdateReady = false;
+
   @query('#mySidenav') _sideNav: HTMLDivElement;
 
   @query('#backdrop') _backDrop: HTMLDivElement;
@@ -163,10 +165,17 @@ export class AppHeader extends LitElement {
         'updatefound',
         () => {
           console.log('Service Worker update detected!');
+          this.newUpdateReady = true;
         },
         { once: true }
       );
     }
+  }
+
+  async applyUpdate() {
+    const swReg = await navigator.serviceWorker.getRegistration();
+    swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    globalThis.location.reload();
   }
 
   created() {
@@ -259,6 +268,11 @@ export class AppHeader extends LitElement {
         <span @click="${this.openNav}" class="mobile-nav-open-icon"
           >&#9776;</span
         >
+        ${this.newUpdateReady
+          ? html`<button @click="${() => this.applyUpdate()}">
+              apply update
+            </button>`
+          : ''}
         ${this.dayDisplay} &nbsp; ${this.curTeamName} &nbsp;&nbsp;&nbsp;
         &#127794;&#129683; &nbsp;
       </nav>
