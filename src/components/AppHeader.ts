@@ -175,10 +175,11 @@ export class AppHeader extends LitElement {
   async applyUpdate() {
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    setTimeout(() => {
-      // give a bit of breathing room
-      globalThis.location.reload();
-    }, 250);
+    console.log('applyUpdate-START-delay');
+    // give a bit of breathing room
+    await new Promise(resolve => setTimeout(() => resolve(''), 333));
+    console.log('applyUpdate-END-delay');
+    globalThis.location.reload();
   }
 
   created() {
