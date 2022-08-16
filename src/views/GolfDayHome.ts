@@ -172,7 +172,7 @@ export class GolfDayHome extends LitElement {
             @click="${e => this.filterDays(e, 'current')}"
             style="padding: 0.25rem"
           >
-            Current
+            Current.
           </button>
           &nbsp;&nbsp;
           <button

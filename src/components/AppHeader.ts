@@ -151,8 +151,7 @@ export class AppHeader extends LitElement {
 
   async setSvcWorker() {
     const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('setSvcWorker-swReg');
-    console.log(swReg);
+    console.log('setSvcWorker=====swReg', swReg);
 
     if (swReg) {
       swReg.addEventListener(
@@ -167,15 +166,8 @@ export class AppHeader extends LitElement {
   }
 
   async checkSvcWorker() {
-    // console.log('APP-HEADER-created!!!!!!!');
-    // setInterval(() => {
-    //   console.log('globalThis.rbbSwReg..');
-    //   console.log(globalThis.rbbSwReg);
-    // }, 15000);
-
     const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('checkSvcWorker----swReg', swReg);
-    console.log(swReg);
+    console.log('checkSvcWorker-swReg', swReg);
 
     if (swReg.waiting) this.newUpdateReady = true;
   }
@@ -187,21 +179,11 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    console.log('APP-HEADER-created...');
+    console.log('APP-HEADER-created!');
     this.setSvcWorker();
     setInterval(() => {
       this.checkSvcWorker();
     }, 9999);
-
-    // listen to the service worker promise in index.html to see if there has been a new update.
-    // condition: the service-worker.js needs to have some kind of change - e.g. increment CACHE_VERSION.
-    // globalThis?.isUpdateAvailable.then(isAvailable => {
-    //   if (isAvailable) {
-    //     console.log(
-    //       'New Update available! Reload the webapp to see the latest juicy changes.'
-    //     );
-    //   }
-    // });
 
     const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.curTeamName = curTeam || '';
@@ -277,7 +259,10 @@ export class AppHeader extends LitElement {
           >&#9776;</span
         >
         ${this.newUpdateReady
-          ? html`<button @click="${() => this.applyUpdate()}">
+          ? html`<button
+              style="padding: 0.25rem"
+              @click="${() => this.applyUpdate()}"
+            >
               apply update
             </button>`
           : ''}
