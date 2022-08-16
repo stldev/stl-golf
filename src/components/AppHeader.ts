@@ -149,22 +149,6 @@ export class AppHeader extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  async setSvcWorker() {
-    const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('setSvcWorker=====swReg', swReg);
-
-    if (swReg) {
-      swReg.addEventListener(
-        'updatefound',
-        () => {
-          console.log('Service Worker update detected!');
-          this.newUpdateReady = true;
-        },
-        { once: true }
-      );
-    }
-  }
-
   async checkSvcWorker() {
     const swReg = await navigator.serviceWorker.getRegistration();
     console.log('checkSvcWorker-swReg-FIRED');
@@ -176,24 +160,26 @@ export class AppHeader extends LitElement {
     const swReg = await navigator.serviceWorker.getRegistration();
     console.log('checkSvcWorkerOnServer-FIRED');
 
-    if (swReg) swReg.update();
+    if (swReg) swReg.update().then(e => console.log('update-E', e));
   }
 
   async applyUpdate() {
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    console.log('applyUpdate-START-delay');
-    // give a bit of breathing room
-    await new Promise(resolve => setTimeout(() => resolve(''), 555));
-    console.log('applyUpdate-END-delay');
+    // console.log('applyUpdate-START-delay');
+    // // give a bit of breathing room
+    // await new Promise(resolve => setTimeout(() => resolve(''), 555));
+    // console.log('applyUpdate-END-delay');
     globalThis.location.reload();
   }
 
   created() {
-    this.setSvcWorker();
+    setInterval(() => {
+      this.checkSvcWorker();
+    }, 30000);
+
     setInterval(() => {
       this.checkSvcWorkerOnServer();
-      this.checkSvcWorker();
     }, 60000);
 
     const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
@@ -251,10 +237,10 @@ export class AppHeader extends LitElement {
           </button>
           <br /><br />
           <button
-            style="width:100%; background-color: green; font-size: small;"
-            @click="${() => globalThis.location.reload()}"
+            style="width:100%; background-color: green;"
+            @click="${() => this.goTo('/settings')}"
           >
-            Check for updates
+            Settings
           </button>
           <br /><br />
           <button
