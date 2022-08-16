@@ -177,7 +177,7 @@ export class AppHeader extends LitElement {
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
     console.log('applyUpdate-START-delay');
     // give a bit of breathing room
-    await new Promise(resolve => setTimeout(() => resolve(''), 333));
+    await new Promise(resolve => setTimeout(() => resolve(''), 555));
     console.log('applyUpdate-END-delay');
     globalThis.location.reload();
   }
