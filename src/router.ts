@@ -37,6 +37,19 @@ const routes: Route[] = [
         },
       },
       {
+        path: 'settings',
+        action: authGuard,
+        children: [
+          {
+            path: '/',
+            component: 'rbb-settings',
+            action: async () => {
+              await import('./views/Settings');
+            },
+          },
+        ],
+      },
+      {
         path: 'golf-day',
         action: authGuard,
         children: [
