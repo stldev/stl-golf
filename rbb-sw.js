@@ -2,5 +2,4 @@
 //   console.log(event.request.url);
 // });
 
-console.log('HI from svc worker! globalThis ======');
-console.log(globalThis);
+console.log('rbb-sw.js LOADED');
