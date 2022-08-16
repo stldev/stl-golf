@@ -11,22 +11,7 @@ async function addSwHandler() {
   );
   newValue = newValue.replace(
     `console.log('ServiceWorker registered from "sw.js".')`,
-    `console.log('ServiceWorker registered.');
-    swReg.onupdatefound = () => {
-      const installingWorker = swReg.installing;
-      installingWorker.onstatechange = () => {
-        switch (installingWorker.state) {
-          case 'installed':
-            if (navigator.serviceWorker.controller) {
-              console.log('NEW_UPDATE_AVAILABLE!');
-            } else {
-              console.log('no_update');
-            }
-            break;
-        }
-      };
-    };
-      `
+    `console.log('ServiceWorker registered.');globalThis.rbbSwReg = swReg;`
   );
 
   await fs.writeFile(indexHtmlPath, newValue, 'utf-8');

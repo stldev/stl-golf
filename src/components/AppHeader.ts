@@ -149,6 +149,10 @@ export class AppHeader extends LitElement {
 
   created() {
     console.log('Will any change do?????????');
+    setInterval(() => {
+      console.log('globalThis.rbbSwReg................');
+      console.log(globalThis.rbbSwReg);
+    }, 2500);
     // listen to the service worker promise in index.html to see if there has been a new update.
     // condition: the service-worker.js needs to have some kind of change - e.g. increment CACHE_VERSION.
     // globalThis?.isUpdateAvailable.then(isAvailable => {

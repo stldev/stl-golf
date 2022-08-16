@@ -2,4 +2,5 @@
 //   console.log(event.request.url);
 // });
 
-console.log('HI from svc worker!');
+console.log('HI from svc worker! globalThis ======');
+console.log(globalThis);
