@@ -50,6 +50,19 @@ const routes: Route[] = [
         ],
       },
       {
+        path: 'my-team',
+        action: authGuard,
+        children: [
+          {
+            path: '/',
+            component: 'rbb-my-team',
+            action: async () => {
+              await import('./views/MyTeam');
+            },
+          },
+        ],
+      },
+      {
         path: 'golf-day',
         action: authGuard,
         children: [

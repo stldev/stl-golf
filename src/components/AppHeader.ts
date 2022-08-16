@@ -235,6 +235,10 @@ export class AppHeader extends LitElement {
           <button style="width:100%" @click="${() => this.goTo('/golf-day')}">
             Golf Days
           </button>
+          <br />
+          <button style="width:100%" @click="${() => this.goTo('/my-team')}">
+            My Team
+          </button>
           <br /><br />
           <button
             style="width:100%; background-color: green;"

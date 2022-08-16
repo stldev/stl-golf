@@ -25,6 +25,8 @@ export class Home extends LitElement {
 
   @query('#itemsSection') itemsSection: HTMLElement;
 
+  @query('#MyTeam') myTeamSectionEle: HTMLElement;
+
   @query('#team-select') emailEle: HTMLInputElement;
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
@@ -44,14 +46,16 @@ export class Home extends LitElement {
       header h2 {
         color: green;
       }
-      #itemsSection {
+      #itemsSection,
+      #MyTeam {
         background: white;
         max-width: 470px;
         margin: 25px auto 8px;
         padding: 16px 12px;
         border-radius: 3px;
       }
-      #itemsSection {
+      #itemsSection,
+      #MyTeam {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
       }
     `,
@@ -82,9 +86,11 @@ export class Home extends LitElement {
     if (this.hasAuth) {
       this.loginFormEle.style.display = 'none';
       this.itemsSection.style.display = 'block';
+      this.myTeamSectionEle.style.display = 'block';
     } else {
       this.loginFormEle.style.display = 'block';
       this.itemsSection.style.display = 'none';
+      this.myTeamSectionEle.style.display = 'none';
     }
   }
 
@@ -144,7 +150,7 @@ export class Home extends LitElement {
     return html`
       <main>
         <header>
-          <h1>Woodchoppers Golf</h1>
+          <h1>Woodchoppers Golf!!</h1>
           <h2>${this.authDisplay()}</h2>
           <h3 id="errorMessage" style="color:red; display: none;">Error</h3>
         </header>
@@ -175,6 +181,9 @@ export class Home extends LitElement {
         </section>
         <section id="itemsSection" style="display: none">
           <h3><a href="/golf-day">View Schedule</a></h3>
+        </section>
+        <section id="MyTeam" style="display: none">
+          <h3><a href="/my-team">View My Team</a></h3>
         </section>
       </main>
     `;
