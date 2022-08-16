@@ -149,15 +149,9 @@ export class AppHeader extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  async checkSvcWorker() {
-    // console.log('APP-HEADER-created!!!!!!!');
-    // setInterval(() => {
-    //   console.log('globalThis.rbbSwReg..');
-    //   console.log(globalThis.rbbSwReg);
-    // }, 15000);
-
+  async setSvcWorker() {
     const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('swRegswRegswRegswReg');
+    console.log('setSvcWorker-swReg');
     console.log(swReg);
 
     if (swReg) {
@@ -172,6 +166,20 @@ export class AppHeader extends LitElement {
     }
   }
 
+  async checkSvcWorker() {
+    // console.log('APP-HEADER-created!!!!!!!');
+    // setInterval(() => {
+    //   console.log('globalThis.rbbSwReg..');
+    //   console.log(globalThis.rbbSwReg);
+    // }, 15000);
+
+    const swReg = await navigator.serviceWorker.getRegistration();
+    console.log('checkSvcWorker----swReg', swReg);
+    console.log(swReg);
+
+    if (swReg.waiting) this.newUpdateReady = true;
+  }
+
   async applyUpdate() {
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -180,7 +188,7 @@ export class AppHeader extends LitElement {
 
   created() {
     console.log('APP-HEADER-created...');
-    this.checkSvcWorker();
+    this.setSvcWorker();
     setInterval(() => {
       this.checkSvcWorker();
     }, 9999);
