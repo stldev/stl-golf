@@ -19,6 +19,8 @@ class StoreService {
 
   public course$ = new ReplaySubject<any>(1);
 
+  public teamRoster$ = new ReplaySubject<any>(1);
+
   public myTeamToday$ = new ReplaySubject<any>(1);
 
   public otherTeamToday$ = new ReplaySubject<any>(1);
