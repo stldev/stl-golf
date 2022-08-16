@@ -43,6 +43,9 @@ export class Home extends LitElement {
         padding: 1rem;
         font-size: x-large;
       }
+      header {
+        padding-bottom: 0;
+      }
       header h2 {
         color: green;
       }
