@@ -54,6 +54,6 @@ export class GolfScoreView extends LitElement {
   }
 
   render() {
-    return html`<span>${this.pScore}</span>`;
+    return html`<span>${this.pScore === 0 ? '--' : this.pScore}</span>`;
   }
 }

@@ -2,7 +2,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase, ref, update } from 'firebase/database';
 import { storeSvc } from '../store/data';
 import { mvpCss } from '../styles-3rdParty';
 
@@ -57,15 +57,21 @@ export class GolfScoreSelect extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
+  // eslint-disable-next-line class-methods-use-this
+
   private onChange(evt: any) {
     storeSvc.errors$.next('onChange-fired');
     const playerScore = Number(evt.target.value);
-    const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`;
+    // // const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`; // if using fb SET
+    const dbUrl = `/${this.team}/${this.day}/${this.hole}`; // using fb UPDATE
 
-    set(ref(getDatabase(), dbUrl), playerScore).catch(err => {
-      storeSvc.errors$.next(err.message);
-      console.log('Firebase-DB-ERROR', err);
-    });
+    const pScoreObj: any = {};
+    if (this.player === 'p1') pScoreObj.p1 = playerScore;
+    if (this.player === 'p2') pScoreObj.p2 = playerScore;
+
+    update(ref(getDatabase(), dbUrl), pScoreObj)
+      .then(() => storeSvc.errors$.next('FB-update-fired'))
+      .catch(err => storeSvc.errors$.next(err.message));
   }
 
   render() {
@@ -79,7 +85,7 @@ export class GolfScoreSelect extends LitElement {
     const isDisabledPast = false; // Date.now() < cutoffTimeInPast ? 'disabled' : '';
 
     if (isDisabledFuture || isDisabledPast)
-      return html`<span>${this.pScore}</span>`;
+      return html`<span>${this.pScore === 0 ? '--' : this.pScore}</span>`;
 
     return html`
       <select @change="${e => this.onChange(e)}">
@@ -87,8 +93,10 @@ export class GolfScoreSelect extends LitElement {
           .fill(0)
           .map((_, i) => {
             if (i === this.pScore)
-              return html`<option selected value="${i}">${i}</option>`;
-            return html`<option value="${i}">${i}</option>`;
+              return html`<option selected value="${i}">
+                ${i === 0 ? '--' : i}
+              </option>`;
+            return html`<option value="${i}">${i === 0 ? '--' : i}</option>`;
           })}
       </select>
     `;
