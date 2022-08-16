@@ -57,8 +57,6 @@ export class GolfScoreSelect extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  // eslint-disable-next-line class-methods-use-this
-
   private onChange(evt: any) {
     storeSvc.errors$.next('onChange-fired');
     const playerScore = Number(evt.target.value);

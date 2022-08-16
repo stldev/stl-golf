@@ -190,12 +190,10 @@ export class GolfDay extends LitElement {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private goToGameDay() {
     Router.go(`/golf-day/${this.day}/game-day`);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private getHoleInfo(holeNumber: number) {
     if (!this.course) return '';
     return this.course[`h${holeNumber}`]?.par || '';

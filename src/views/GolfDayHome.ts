@@ -128,13 +128,11 @@ export class GolfDayHome extends LitElement {
     this.allSubs.add(sub1);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private goTo(day: string) {
     const path = `golf-day/${day}`;
     Router.go(path);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private makeItRain() {
     return Array(60)
       .fill(0)
@@ -149,7 +147,6 @@ export class GolfDayHome extends LitElement {
       });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private filterDays(evt: any, itemState: string) {
     if (evt?.target) {
       // eslint-disable-next-line no-return-assign

@@ -99,7 +99,6 @@ export class GameDay extends LitElement {
     this.allSubs.add(sub1);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getTeamByHole(i: number) {
     return Array(8)
       .fill(0)
@@ -109,7 +108,6 @@ export class GameDay extends LitElement {
       );
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getTeamsHeader() {
     return Array(8)
       .fill(0)
@@ -121,7 +119,6 @@ export class GameDay extends LitElement {
       );
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private goBack() {
     Router.go(`/golf-day/${this.day}`);
   }

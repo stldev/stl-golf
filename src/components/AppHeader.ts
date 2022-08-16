@@ -217,7 +217,6 @@ export class AppHeader extends LitElement {
     Router.go('/home');
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private goTo(path: string) {
     this.closeNav();
     Router.go(path);

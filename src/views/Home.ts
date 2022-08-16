@@ -127,7 +127,6 @@ export class Home extends LitElement {
     return html`Welcome!`;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   private onChange(e: any) {
     const inputVal = (e.target.value as string) || '';
 
