@@ -164,7 +164,10 @@ export class AppHeader extends LitElement {
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
     console.log('applyUpdate-START-delay');
     // give a bit of breathing room
-    await new Promise(resolve => setTimeout(() => resolve(''), 750));
+
+    if (globalThis.ApplePaySession) {
+      await new Promise(resolve => setTimeout(() => resolve(''), 750));
+    }
     console.log('applyUpdate-END-delay');
     globalThis.location.reload();
   }
