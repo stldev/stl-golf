@@ -169,7 +169,7 @@ export class AppHeader extends LitElement {
     const swReg = await navigator.serviceWorker.getRegistration();
     console.log('checkSvcWorker-swReg-FIRED');
 
-    if (swReg.waiting) this.newUpdateReady = true;
+    if (swReg?.waiting) this.newUpdateReady = true;
   }
 
   async applyUpdate() {
@@ -238,16 +238,18 @@ export class AppHeader extends LitElement {
           <button style="width:100%" @click="${() => this.goTo('/home')}">
             Home
           </button>
+          <br />
           <button style="width:100%" @click="${() => this.goTo('/golf-day')}">
             Golf Days
           </button>
+          <br /><br />
           <button
-            style="width:100%; background-color: green;"
+            style="width:100%; background-color: green; font-size: small;"
             @click="${() => globalThis.location.reload()}"
           >
-            Reload App
+            Check for updates
           </button>
-
+          <br /><br />
           <button
             style="width:100%; background-color: red;"
             @click="${() => this.signMeOut()}"
