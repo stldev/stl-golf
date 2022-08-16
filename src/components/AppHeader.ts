@@ -149,38 +149,30 @@ export class AppHeader extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  async checkSvcWorker() {
-    const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('checkSvcWorker-swReg-FIRED');
-
-    if (swReg?.waiting) this.newUpdateReady = true;
-  }
-
   async checkSvcWorkerOnServer() {
     const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('checkSvcWorkerOnServer-FIRED');
+    console.log('checkSvcWorkerOnServer-FIRED', swReg);
 
-    if (swReg) swReg.update().then(e => console.log('update-E', e));
+    if (swReg)
+      swReg.update().then((swRegState: any) => {
+        if (swRegState?.waiting) storeSvc.newUpdateReady$.next(true);
+      });
   }
 
   async applyUpdate() {
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    // console.log('applyUpdate-START-delay');
-    // // give a bit of breathing room
-    // await new Promise(resolve => setTimeout(() => resolve(''), 555));
-    // console.log('applyUpdate-END-delay');
+    console.log('applyUpdate-START-delay');
+    // give a bit of breathing room
+    await new Promise(resolve => setTimeout(() => resolve(''), 750));
+    console.log('applyUpdate-END-delay');
     globalThis.location.reload();
   }
 
   created() {
     setInterval(() => {
-      this.checkSvcWorker();
-    }, 30000);
-
-    setInterval(() => {
       this.checkSvcWorkerOnServer();
-    }, 60000);
+    }, 30000);
 
     const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.curTeamName = curTeam || '';
@@ -190,8 +182,13 @@ export class AppHeader extends LitElement {
       this.dayDisplay = theDay || '';
     });
 
+    const sub3 = storeSvc.newUpdateReady$.subscribe(uReady => {
+      this.newUpdateReady = !!uReady;
+    });
+
     this.allSubs.add(sub1);
     this.allSubs.add(sub2);
+    this.allSubs.add(sub3);
   }
 
   private openNav() {

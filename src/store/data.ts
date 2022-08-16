@@ -25,6 +25,8 @@ class StoreService {
 
   public allTeamsToday$ = new ReplaySubject<any>(1);
 
+  public newUpdateReady$ = new ReplaySubject<boolean>(1);
+
   constructor() {
     this.team = localStorage.getItem('woodchopper-team') || '';
   }
