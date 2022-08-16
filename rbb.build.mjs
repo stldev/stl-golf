@@ -18,11 +18,9 @@ async function addSwHandler() {
         switch (installingWorker.state) {
           case 'installed':
             if (navigator.serviceWorker.controller) {
-              // new update available
-              resolve(true);
+              console.log('NEW_UPDATE_AVAILABLE!');
             } else {
-              // no update available
-              resolve(false);
+              console.log('no_update');
             }
             break;
         }
