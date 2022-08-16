@@ -96,7 +96,7 @@ export default {
       globDirectory: path.join('public'),
       // cache any html js and css by default
       globPatterns: ['**/*.{html,js,css,webmanifest}'],
-      skipWaiting: true,
+      skipWaiting: false,
       importScripts: ['./rbb-sw.js'],
       clientsClaim: true,
       runtimeCaching: [{ urlPattern: 'polyfills/*.js', handler: 'CacheFirst' }],

@@ -148,7 +148,7 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    console.log('APP-HEADER-created!');
+    console.log('APP-HEADER-created!!!!!!!');
     setInterval(() => {
       console.log('globalThis.rbbSwReg..');
       console.log(globalThis.rbbSwReg);
