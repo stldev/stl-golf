@@ -9,6 +9,8 @@ class StoreService {
 
   private coursePristine = true;
 
+  private rosterPristine = true;
+
   public currentTeam$ = new ReplaySubject<string>(1);
 
   public day$ = new ReplaySubject<string>(1);
@@ -67,6 +69,17 @@ class StoreService {
       });
 
       this.coursePristine = false;
+    }
+  }
+
+  getRoster(team: string) {
+    if (this.rosterPristine && team) {
+      const scheduleDb = ref(getDatabase(), `/${team}/roster`);
+      onValue(scheduleDb, snapshot => {
+        this.teamRoster$.next(snapshot.val() || {});
+      });
+
+      this.rosterPristine = false;
     }
   }
 
