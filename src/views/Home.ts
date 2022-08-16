@@ -145,7 +145,7 @@ export class Home extends LitElement {
     return html`
       <main>
         <header>
-          <h1>Woodchoppers</h1>
+          <h1>Woodchoppers______</h1>
           <h2>${this.authDisplay()}</h2>
           <h3 id="errorMessage" style="color:red; display: none;">Error</h3>
         </header>

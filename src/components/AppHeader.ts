@@ -170,6 +170,8 @@ export class AppHeader extends LitElement {
   }
 
   created() {
+    console.log('APP-HEADER-created...');
+    this.checkSvcWorker();
     setInterval(() => {
       this.checkSvcWorker();
     }, 9999);
