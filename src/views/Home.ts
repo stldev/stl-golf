@@ -174,7 +174,7 @@ export class Home extends LitElement {
           />
         </section>
         <section id="itemsSection" style="display: none">
-          <h3><a href="/golf-day">Check out all days</a></h3>
+          <h3><a href="/golf-day">View Schedule</a></h3>
         </section>
       </main>
     `;
