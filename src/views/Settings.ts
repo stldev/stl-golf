@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, query, state } from 'lit/decorators.js';
 import { storeSvc } from '../store/data';
 import { mvpCss } from '../styles-3rdParty';
 
@@ -7,6 +7,10 @@ import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-settings')
 export class Settings extends LitElement {
+  @query('button') updateBtnEle: HTMLButtonElement;
+
+  @state() updateBtnText = 'Check for updates';
+
   static styles = [
     mvpCss,
     css`
@@ -24,9 +28,19 @@ export class Settings extends LitElement {
   }
 
   async checkForUpdates() {
+    this.updateBtnEle.disabled = true;
+    this.updateBtnEle.textContent = 'Checking...';
     const swReg = await navigator.serviceWorker.getRegistration();
     console.log('checkForUpdates-swReg', swReg);
-    if (swReg?.waiting) storeSvc.newUpdateReady$.next(true);
+    if (swReg?.waiting) {
+      storeSvc.newUpdateReady$.next(true);
+      this.updateBtnEle.disabled = false;
+      this.updateBtnEle.textContent = this.updateBtnText;
+    } else {
+      await new Promise(resolve => setTimeout(() => resolve(''), 2500));
+      this.updateBtnEle.disabled = false;
+      this.updateBtnEle.textContent = this.updateBtnText;
+    }
   }
 
   render() {
@@ -37,7 +51,7 @@ export class Settings extends LitElement {
         </header>
         <section>
           <button @click="${() => this.checkForUpdates()}">
-            Check for updates
+            ${this.updateBtnText}
           </button>
         </section>
       </main>

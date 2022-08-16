@@ -274,8 +274,7 @@ export class AppHeader extends LitElement {
               apply update
             </button>`
           : ''}
-        ${this.dayDisplay} &nbsp; ${this.curTeamName} &nbsp;&nbsp;&nbsp;
-        &#127794;&#129683; &nbsp;
+        ${this.dayDisplay} &nbsp; ${this.curTeamName} 🌲🪓 &nbsp;
       </nav>
     `;
   }
