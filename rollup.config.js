@@ -28,6 +28,7 @@ export default {
     }),
     copy({
       targets: [
+        { src: 'rbb-sw.js', dest: './public' },
         { src: 'manifest.webmanifest', dest: './public' },
         { src: 'assets/*.png', dest: './public' },
         { src: '*.svg', dest: './public' },
@@ -96,6 +97,7 @@ export default {
       // cache any html js and css by default
       globPatterns: ['**/*.{html,js,css,webmanifest}'],
       skipWaiting: true,
+      importScripts: ['./rbb-sw.js'],
       clientsClaim: true,
       runtimeCaching: [{ urlPattern: 'polyfills/*.js', handler: 'CacheFirst' }],
     }),

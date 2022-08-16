@@ -148,6 +148,16 @@ export class AppHeader extends LitElement {
   }
 
   created() {
+    // listen to the service worker promise in index.html to see if there has been a new update.
+    // condition: the service-worker.js needs to have some kind of change - e.g. increment CACHE_VERSION.
+    globalThis?.isUpdateAvailable.then(isAvailable => {
+      if (isAvailable) {
+        console.log(
+          'New Update available! Reload the webapp to see the latest juicy changes.'
+        );
+      }
+    });
+
     const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.curTeamName = curTeam || '';
     });
