@@ -147,17 +147,33 @@ export class AppHeader extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  created() {
-    console.log('APP-HEADER-created!!!!!!!');
-    setInterval(() => {
-      console.log('globalThis.rbbSwReg..');
-      console.log(globalThis.rbbSwReg);
-    }, 15000);
+  async checkSvcWorker() {
+    // console.log('APP-HEADER-created!!!!!!!');
+    // setInterval(() => {
+    //   console.log('globalThis.rbbSwReg..');
+    //   console.log(globalThis.rbbSwReg);
+    // }, 15000);
 
+    const swReg = await navigator.serviceWorker.getRegistration();
+    console.log('swRegswRegswRegswReg');
+    console.log(swReg);
+
+    if (swReg) {
+      swReg.addEventListener(
+        'updatefound',
+        () => {
+          console.log('Service Worker update detected!');
+        },
+        { once: true }
+      );
+    }
+  }
+
+  created() {
     setInterval(() => {
-      console.log('navigator.serviceWorker.getRegistration()');
-      navigator.serviceWorker.getRegistration().then(e => console.log(e));
+      this.checkSvcWorker();
     }, 9999);
+
     // listen to the service worker promise in index.html to see if there has been a new update.
     // condition: the service-worker.js needs to have some kind of change - e.g. increment CACHE_VERSION.
     // globalThis?.isUpdateAvailable.then(isAvailable => {
