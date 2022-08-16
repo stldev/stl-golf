@@ -84,7 +84,10 @@ export class GolfDayHome extends LitElement {
 
   created() {
     const team = localStorage.getItem('woodchopper-team');
-    const todayEpoch = Date.now();
+    const ONE_HOUR_MILLI = 3600000;
+    const NOW_MINUS_HOURS = Date.now() - ONE_HOUR_MILLI * 24;
+    // Keep "current" even on the same day, don't want it to be in the "past"
+    const modifiedEpoch = new Date(NOW_MINUS_HOURS).getTime();
 
     const sub1 = storeSvc.schedule$.subscribe(s => {
       const pairings = Object.entries(s).reduce((acc, [day, pairs]) => {
@@ -105,10 +108,10 @@ export class GolfDayHome extends LitElement {
 
       pairings.forEach(p => {
         const dayToTest = new Date(`${p.day}T12:00:00.000Z`).getTime();
-        if (todayEpoch > dayToTest) {
+        if (modifiedEpoch > dayToTest) {
           p.state = 'past';
         }
-        if (todayEpoch < dayToTest) {
+        if (modifiedEpoch < dayToTest) {
           p.state = 'future';
         }
       });
