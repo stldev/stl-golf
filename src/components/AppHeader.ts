@@ -151,28 +151,35 @@ export class AppHeader extends LitElement {
 
   async checkSvcWorkerOnServer() {
     let swReg = await navigator.serviceWorker.getRegistration();
-    console.log('checkSvcWorkerOnServer-FIRED', swReg);
+    console.log('checkSvcWorkerOnServer-FIRED-swReg..', swReg);
+    console.log('newUpdateReady', this.newUpdateReady);
 
     if (swReg) {
       await swReg.update();
       swReg = await navigator.serviceWorker.getRegistration();
+      console.log('swReg2=======', swReg);
       if (swReg?.waiting) storeSvc.newUpdateReady$.next(true);
     }
   }
 
   async applyUpdate() {
-    storeSvc.newUpdateReady$.next(false);
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
     // give a bit of breathing room
 
+    console.log('globalThis.ApplePaySession', globalThis.ApplePaySession);
+
     if (globalThis.ApplePaySession) {
+      storeSvc.newUpdateReady$.next(false);
       await new Promise(resolve => setTimeout(() => resolve(''), 777));
+      console.log('PROMISE-wait-done');
       globalThis.location.reload();
     }
 
     if (!globalThis.ApplePaySession) {
+      storeSvc.newUpdateReady$.next(false);
       setTimeout(() => {
+        console.log('TIME_OUT-wait-done');
         globalThis.location.reload();
       }, 777);
     }
