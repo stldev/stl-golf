@@ -179,7 +179,7 @@ export class Home extends LitElement {
     return html`
       <main>
         <header>
-          <h1>The Woodchopper League</h1>
+          <h1>Woodchopper Golf</h1>
           <h2>${this.authDisplay()}</h2>
           <h3 id="errorMessage" style="color:red; display: none;">Error</h3>
         </header>
