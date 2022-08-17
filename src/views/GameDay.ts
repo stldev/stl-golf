@@ -82,14 +82,14 @@ export class GameDay extends LitElement {
               ) as HTMLSelectElement;
 
               // eslint-disable-next-line prefer-destructuring
-              if (p1Ele) p1Ele.textContent = (scores as any).p1 || 0;
+              if (p1Ele) p1Ele.textContent = (scores as any).p1 || '--';
 
               const p2Ele = this.shadowRoot?.querySelector(
                 `#${teamName}-${hole}-p2`
               ) as HTMLSelectElement;
 
               // eslint-disable-next-line prefer-destructuring
-              if (p2Ele) p2Ele.textContent = (scores as any).p2 || 0;
+              if (p2Ele) p2Ele.textContent = (scores as any).p2 || '--';
             });
           }
         });
@@ -103,8 +103,8 @@ export class GameDay extends LitElement {
     return Array(8)
       .fill(0)
       .map(
-        (_, ii) => html`<td id="team${ii + 1}-h${i + 1}-p1">__</td>
-          <td id="team${ii + 1}-h${i + 1}-p2">__</td>`
+        (_, ii) => html`<td id="team${ii + 1}-h${i + 1}-p1">--</td>
+          <td id="team${ii + 1}-h${i + 1}-p2">--</td>`
       );
   }
 
