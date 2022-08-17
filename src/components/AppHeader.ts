@@ -213,6 +213,7 @@ export class AppHeader extends LitElement {
 
   private async signMeOut() {
     this.closeNav();
+    storeSvc.setPristine();
     localStorage.removeItem('woodchopper-team');
     await signOut(getAuth());
     Router.go('/home');
