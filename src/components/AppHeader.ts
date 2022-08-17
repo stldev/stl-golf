@@ -150,15 +150,17 @@ export class AppHeader extends LitElement {
   }
 
   async checkSvcWorkerOnServer() {
-    let swReg = await navigator.serviceWorker.getRegistration();
-    console.log('checkSvcWorkerOnServer-FIRED-swReg..', swReg);
-    console.log('newUpdateReady', this.newUpdateReady);
+    const swReg = await navigator.serviceWorker.getRegistration();
+    const swRegALL = await navigator.serviceWorker.getRegistrations();
+    console.log('checkSvcWorkerOnServer-FIRED-swRegALL..', swRegALL);
 
     if (swReg) {
-      await swReg.update();
-      swReg = await navigator.serviceWorker.getRegistration();
-      console.log('swReg2=======', swReg);
-      if (swReg?.waiting) storeSvc.newUpdateReady$.next(true);
+      swReg.update().then((swRegNew: any) => {
+        if (swRegNew?.waiting) {
+          console.log('swReg2.waiting=======', swRegNew.waiting);
+          storeSvc.newUpdateReady$.next(true);
+        }
+      });
     }
   }
 
