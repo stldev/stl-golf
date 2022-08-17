@@ -27,7 +27,7 @@ export class GolfScoreView extends LitElement {
       span {
         display: inline-block;
         margin-bottom: 1rem;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
       }
     `,
   ];

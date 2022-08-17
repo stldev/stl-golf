@@ -28,7 +28,7 @@ export class GolfScoreSelect extends LitElement {
       span {
         display: inline-block;
         margin-bottom: 0.75rem;
-        font-size: 1.25rem;
+        font-size: 1.4rem;
       }
       select {
         font-size: 1.25rem;
