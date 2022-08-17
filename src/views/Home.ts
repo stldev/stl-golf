@@ -27,7 +27,9 @@ export class Home extends LitElement {
 
   @query('#MyTeam') myTeamSectionEle: HTMLElement;
 
-  @query('#team-select') emailEle: HTMLInputElement;
+  @query('select') selectEle: HTMLSelectElement;
+
+  @query('input') pinEle: HTMLInputElement;
 
   @query('#errorMessage') errorMessage: HTMLParagraphElement;
 
@@ -36,6 +38,9 @@ export class Home extends LitElement {
     css`
       section {
         text-align: center;
+      }
+      select {
+        border: 5px solid black;
       }
       select,
       input {
@@ -80,6 +85,11 @@ export class Home extends LitElement {
     this.allSubs.add(sub1);
   }
 
+  protected firstUpdated() {
+    this.pinEle.disabled = true;
+    this.pinEle.style.border = 'none';
+  }
+
   disconnectedCallback() {
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
@@ -106,8 +116,8 @@ export class Home extends LitElement {
     this.errorMessage.style.display = 'none';
     const signInResult: UserCredential = await signInWithEmailAndPassword(
       getAuth(),
-      `woodchoppers.golf+team${this.emailEle.value}@gmail.com`,
-      `${process.env.PASSWORD_BASE}${this.emailEle.value}-${pin}`
+      `woodchoppers.golf+team${this.selectEle.value}@gmail.com`,
+      `${process.env.PASSWORD_BASE}${this.selectEle.value}-${pin}`
     ).catch(err => {
       this.errorMessage.innerHTML = err.message || 'sign in error.';
       return null;
@@ -118,14 +128,18 @@ export class Home extends LitElement {
       storeSvc.getSchedule(this.curTeamName);
       // const { user } = signInResult;
       // console.log('signInResult-user', user);
-      this.emailEle.value = '';
+      this.selectEle.value = '';
       this.loginFormEle.style.display = 'none';
       this.hasAuth = true;
+      this.pinEle.disabled = false;
+      this.pinEle.style.border = '5px solid black';
     } else {
       setTimeout(() => {
         this.errorMessage.style.display = 'block';
         this.hasAuth = false;
         this.authLoading = false;
+        this.pinEle.disabled = false;
+        this.pinEle.style.border = '5px solid black';
       }, 2500);
     }
   }
@@ -143,9 +157,21 @@ export class Home extends LitElement {
       const isValid = /[0-9]{4}/.test(inputVal);
       if (isValid) {
         e.target.value = '';
+        this.pinEle.disabled = true;
+        this.pinEle.style.border = 'none';
         this.authLoading = true;
         this.doUserLogin(inputVal);
       }
+    }
+  }
+
+  private onSelectChange(evt: any) {
+    if (evt.target.value) {
+      this.pinEle.disabled = false;
+      this.pinEle.style.border = '5px solid black';
+    } else {
+      this.pinEle.disabled = true;
+      this.pinEle.style.border = 'none';
     }
   }
 
@@ -158,7 +184,7 @@ export class Home extends LitElement {
           <h3 id="errorMessage" style="color:red; display: none;">Error</h3>
         </header>
         <section id="loginForm" style="display: none">
-          <select name="teams" id="team-select">
+          <select @change="${e => this.onSelectChange(e)}">
             <option value="">--Select your team--</option>
             <option value="1">Team 1</option>
             <option value="2">Team 2</option>
@@ -170,7 +196,7 @@ export class Home extends LitElement {
             <option value="8">Team 8</option>
           </select>
           <br />
-          <small>4 digit team pin:</small>
+          <p>4 digit team pin:</p>
 
           <input
             @keyup=${(e: Event) => this.onChange(e)}
