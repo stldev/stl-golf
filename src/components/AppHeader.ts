@@ -153,7 +153,7 @@ export class AppHeader extends LitElement {
     const swReg = await navigator.serviceWorker.getRegistration();
     if (swReg) {
       if (swReg.waiting) {
-        console.log('swReg2.waiting=======', swReg.waiting);
+        console.log('swReg2.....', swReg);
         storeSvc.newUpdateReady$.next(true);
       } else {
         console.log('swReg.update()');
@@ -165,19 +165,16 @@ export class AppHeader extends LitElement {
   async applyUpdate() {
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    // give a bit of breathing room
 
-    console.log('globalThis.ApplePaySession', globalThis.ApplePaySession);
+    storeSvc.newUpdateReady$.next(false);
 
     if (globalThis.ApplePaySession) {
-      storeSvc.newUpdateReady$.next(false);
       await new Promise(resolve => setTimeout(() => resolve(''), 777));
       console.log('PROMISE-wait-done');
       globalThis.location.reload();
     }
 
     if (!globalThis.ApplePaySession) {
-      storeSvc.newUpdateReady$.next(false);
       setTimeout(() => {
         console.log('TIME_OUT-wait-done');
         globalThis.location.reload();
