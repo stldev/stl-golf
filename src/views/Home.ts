@@ -199,7 +199,7 @@ export class Home extends LitElement {
           <p>4 digit team pin:</p>
 
           <input
-            @keyup=${(e: Event) => this.onChange(e)}
+            @keyup=${e => this.onChange(e)}
             type="tel"
             pattern="[0-9]{4}"
             size="5"

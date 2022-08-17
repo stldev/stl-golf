@@ -183,12 +183,9 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    setTimeout(() => {
-      this.checkSvcWorkerOnServer();
-    }, 5555);
     setInterval(() => {
       this.checkSvcWorkerOnServer();
-    }, 35000);
+    }, 45000);
 
     const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.curTeamName = curTeam || '';
