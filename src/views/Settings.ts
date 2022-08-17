@@ -54,6 +54,13 @@ export class Settings extends LitElement {
             ${this.updateBtnText}
           </button>
         </section>
+        <br />
+        <section>
+          <article style="border: solid 2px black; padding: 0.6rem;">
+            ${navigator.vendor} | ${navigator.platform} |
+            ${globalThis.ApplePaySession ? 'ApplePay=yes' : 'ApplePay=NO'}
+          </article>
+        </section>
       </main>
     `;
   }
