@@ -183,7 +183,9 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    this.checkSvcWorkerOnServer();
+    setTimeout(() => {
+      this.checkSvcWorkerOnServer();
+    }, 5555);
     setInterval(() => {
       this.checkSvcWorkerOnServer();
     }, 35000);
