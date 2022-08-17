@@ -3,25 +3,23 @@ import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 class StoreService {
-  private team = '';
+  private pristine = {
+    course: true,
+    roster: true,
+    schedule: true,
+  };
 
-  private schedulePristine = true;
+  public course$ = new ReplaySubject<any>(1);
 
-  private coursePristine = true;
+  public teamRoster$ = new ReplaySubject<any>(1);
 
-  private rosterPristine = true;
+  public schedule$ = new ReplaySubject<any>(1);
 
   public currentTeam$ = new ReplaySubject<string>(1);
 
   public day$ = new ReplaySubject<string>(1);
 
   public errors$ = new ReplaySubject<string>(1);
-
-  public schedule$ = new ReplaySubject<any>(1);
-
-  public course$ = new ReplaySubject<any>(1);
-
-  public teamRoster$ = new ReplaySubject<any>(1);
 
   public myTeamToday$ = new ReplaySubject<any>(1);
 
@@ -31,12 +29,15 @@ class StoreService {
 
   public newUpdateReady$ = new ReplaySubject<boolean>(1);
 
-  constructor() {
-    this.team = localStorage.getItem('woodchopper-team') || '';
+  init() {
+    const team = localStorage.getItem('woodchopper-team') || '';
+    this.authHandler(team);
   }
 
-  init() {
-    this.authHandler(this.team);
+  setPristine() {
+    this.pristine.course = true;
+    this.pristine.roster = true;
+    this.pristine.schedule = true;
   }
 
   authHandler(team: string) {
@@ -62,29 +63,30 @@ class StoreService {
   }
 
   getCourse() {
-    if (this.coursePristine) {
+    if (this.pristine.course) {
       const courseDb = ref(getDatabase(), `/course`);
       onValue(courseDb, snapshot => {
         this.course$.next(snapshot.val() || {});
       });
 
-      this.coursePristine = false;
+      this.pristine.course = false;
     }
   }
 
   getRoster(team: string) {
-    if (this.rosterPristine && team) {
+    if (this.pristine.roster && team) {
+      console.log('DATA-getRoster');
       const scheduleDb = ref(getDatabase(), `/${team}/roster`);
       onValue(scheduleDb, snapshot => {
         this.teamRoster$.next(snapshot.val() || {});
       });
 
-      this.rosterPristine = false;
+      this.pristine.roster = false;
     }
   }
 
   getSchedule(team: string) {
-    if (this.schedulePristine && team) {
+    if (this.pristine.schedule && team) {
       const thisYear = new Date().getFullYear();
 
       const scheduleDb = ref(getDatabase(), `/schedules/${thisYear}`);
@@ -92,7 +94,7 @@ class StoreService {
         this.schedule$.next(snapshot.val() || {});
       });
 
-      this.schedulePristine = false;
+      this.pristine.schedule = false;
     }
   }
 
