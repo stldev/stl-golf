@@ -15,6 +15,8 @@ export class GolfDay extends LitElement {
 
   @state() team = '';
 
+  @state() teamRoster = [];
+
   @state() teamOther = '';
 
   @state() startingHole = 10;
@@ -25,7 +27,11 @@ export class GolfDay extends LitElement {
 
   @state() error = '';
 
+  @state() clickTimeNow = 0;
+
   @query('table tbody') scoresTableEle: HTMLTableElement;
+
+  @query('#p1') p1Ele: HTMLSpanElement;
 
   @query('#total-team-p1') totalTeamP1Ele: HTMLTableElement;
 
@@ -63,6 +69,7 @@ export class GolfDay extends LitElement {
   constructor() {
     super();
     this.team = localStorage.getItem('woodchopper-team');
+    storeSvc.getRoster(this.team);
   }
 
   connectedCallback() {
@@ -75,8 +82,20 @@ export class GolfDay extends LitElement {
       this.error = error || '';
     });
 
+    const sub3 = storeSvc.teamRoster$.subscribe(tr => {
+      const teamRoster = Object.entries(tr).reduce((acc, [player, info]) => {
+        acc.push({ player, info });
+        return acc;
+      }, []);
+
+      this.teamRoster = teamRoster;
+      console.log('teamRoster', teamRoster);
+    });
+
     this.allSubs.add(sub1);
     this.allSubs.add(sub2);
+    this.allSubs.add(sub3);
+
     if (super.connectedCallback) super.connectedCallback();
   }
 
@@ -200,6 +219,19 @@ export class GolfDay extends LitElement {
     return this.course[`h${holeNumber}`]?.par || '';
   }
 
+  doIt() {
+    if (this.clickTimeNow) {
+      const aaa = Date.now() - this.clickTimeNow;
+      if (aaa < 333) {
+        this.p1Ele.style.color = 'red';
+        console.log('teamRoster', this.teamRoster);
+      }
+      this.clickTimeNow = 0;
+    } else {
+      this.clickTimeNow = Date.now();
+    }
+  }
+
   render() {
     return html`
       <article>
@@ -208,7 +240,8 @@ export class GolfDay extends LitElement {
             <td>Hole (Par)</td>
             <td style="color: blue; font-weight: bold;" colspan="2">
               ${this.team} <br />
-              Player1&nbsp;Player2
+              <span id="p1" @click="${() => this.doIt()}">Player1</span> &nbsp;
+              Player2
             </td>
             <td colspan="2">
               ${this.teamOther} <br />
