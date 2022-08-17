@@ -10,13 +10,22 @@ import { mvpCss } from '../styles-3rdParty';
 export class MyTeam extends LitElement {
   @state() allSubs = new Subscription();
 
-  @state() teamRoster = null;
+  @state() teamRoster = [];
 
   static styles = [
     mvpCss,
     css`
       section {
         text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        background: white;
+        max-width: 470px;
+        margin: 25px auto 8px;
+        padding: 16px 12px;
+        border-radius: 3px;
+      }
+      header {
+        padding-bottom: 0;
       }
       header h2 {
         color: green;
@@ -41,11 +50,14 @@ export class MyTeam extends LitElement {
 
   connectedCallback() {
     const sub1 = storeSvc.teamRoster$.subscribe(tr => {
-      this.teamRoster = tr;
-      console.log('this.teamRosterthis.teamRoster');
-      console.log(this.teamRoster);
-    });
+      const teamRoster = Object.entries(tr).reduce((acc, [player, info]) => {
+        acc.push({ player, info });
+        return acc;
+      }, []);
 
+      this.teamRoster = teamRoster;
+      console.log('teamRoster', teamRoster);
+    });
     this.allSubs.add(sub1);
 
     if (super.connectedCallback) super.connectedCallback();
@@ -57,7 +69,29 @@ export class MyTeam extends LitElement {
         <header>
           <h2>My Team</h2>
         </header>
-        <section>Roster and stuff here</section>
+        ${this.teamRoster.map(
+          tr =>
+            html`
+              <section>
+                <table>
+                  <tr>
+                    <td style="text-align:center;" colspan="2">
+                      ${tr.info.isCaptain ? '👑' : ''} ${tr.info.name}
+                      (${tr.info.nameShort})
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Handicap (start):</td>
+                    <td>${tr.info['handicap-start']}</td>
+                  </tr>
+                  <tr>
+                    <td>Handicap (current):</td>
+                    <td>${tr.info['handicap-now']}</td>
+                  </tr>
+                </table>
+              </section>
+            `
+        )}
       </main>
     `;
   }
