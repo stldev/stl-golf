@@ -58,7 +58,6 @@ export class GolfScoreSelect extends LitElement {
   }
 
   private onChange(evt: any) {
-    storeSvc.errors$.next('onChange-fired');
     const playerScore = Number(evt.target.value);
     // // const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`; // if using fb SET
     const dbUrl = `/${this.team}/${this.day}/${this.hole}`; // using fb UPDATE
@@ -67,9 +66,9 @@ export class GolfScoreSelect extends LitElement {
     if (this.player === 'p1') pScoreObj.p1 = playerScore;
     if (this.player === 'p2') pScoreObj.p2 = playerScore;
 
-    update(ref(getDatabase(), dbUrl), pScoreObj)
-      .then(() => storeSvc.errors$.next('FB-update-fired'))
-      .catch(err => storeSvc.errors$.next(err.message));
+    update(ref(getDatabase(), dbUrl), pScoreObj).catch(err =>
+      storeSvc.errors$.next(err.message)
+    );
   }
 
   render() {
