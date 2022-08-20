@@ -49,12 +49,6 @@ export class Settings extends LitElement {
       false
     );
 
-    globalThis.addEventListener(
-      'pagehide',
-      () => this.handlePagehide({}),
-      false
-    );
-
     const sub1 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
       this.hasDbConn = hasDbConn;
     });
@@ -63,18 +57,10 @@ export class Settings extends LitElement {
   }
 
   handleVisibilityChange() {
-    console.log('document.visibilityState===', document.visibilityState);
+    console.log('document.visibilityState: ', document.visibilityState);
     const timestamp = new Date().toLocaleString();
     this.pageHideLogs = this.pageHideLogs.concat([
       `${timestamp}-visibilityState-${document.visibilityState}`,
-    ]);
-  }
-
-  handlePagehide(evt) {
-    console.log('-----handlePagehide-EVT:', evt);
-    const timestamp = new Date().toLocaleString();
-    this.pageHideLogs = this.pageHideLogs.concat([
-      `${timestamp}-handlePagehide`,
     ]);
   }
 
@@ -123,7 +109,11 @@ export class Settings extends LitElement {
         </section>
         <br />
         <section>
-          ${this.pageHideLogs.map(p => html`<article>${p}</article>`)}
+          ${this.pageHideLogs.map(
+            p =>
+              html`<article>${p}</article>
+                <br />`
+          )}
         </section>
       </main>
     `;
