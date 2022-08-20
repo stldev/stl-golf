@@ -8,7 +8,6 @@ export class RbbApp extends LitElement {
   @state() visibilityStateLog = [];
 
   constructor() {
-// ok
     super();
     this.created();
   }

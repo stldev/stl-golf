@@ -151,19 +151,6 @@ export class AppHeader extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  async checkSvcWorkerOnServer() {
-    const swReg = await navigator.serviceWorker.getRegistration();
-    if (swReg) {
-      if (swReg.waiting) {
-        console.log('swReg2.....', swReg);
-        storeSvc.newUpdateReady$.next(true);
-      } else {
-        console.log('swReg.update()');
-        swReg.update();
-      }
-    }
-  }
-
   async applyUpdate() {
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -185,10 +172,6 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    setInterval(() => {
-      this.checkSvcWorkerOnServer();
-    }, 45000);
-
     const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.curTeamName = curTeam || '';
     });
