@@ -3,6 +3,8 @@ import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 class StoreService {
+  private visibilityStateLog = [];
+
   private pristine = {
     course: true,
     roster: true,
@@ -39,6 +41,36 @@ class StoreService {
     setTimeout(() => {
       this.getConnectionState();
     }, 750);
+
+    setInterval(() => {
+      this.checkSvcWorkerOnServer();
+    }, 60000);
+
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        console.log('document.visibilityState: ', document.visibilityState);
+        const timestamp = new Date().toLocaleString();
+        this.visibilityStateLog = this.visibilityStateLog.concat([
+          `${timestamp}-visibilityState-${document.visibilityState}`,
+        ]);
+        this.visibilityState$.next(this.visibilityStateLog);
+      },
+      false
+    );
+  }
+
+  async checkSvcWorkerOnServer() {
+    const swReg = await navigator.serviceWorker.getRegistration();
+    if (swReg) {
+      if (swReg.waiting) {
+        console.log('swReg.waiting=TRUE', swReg);
+        this.newUpdateReady$.next(true);
+      } else {
+        console.log('swReg.update()');
+        swReg.update();
+      }
+    }
   }
 
   getConnectionState() {
