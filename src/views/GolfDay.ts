@@ -264,24 +264,28 @@ export class GolfDay extends LitElement {
                     <rbb-golf-score-select
                       id="${this.team}-h${i + 1}-p1"
                       day="${this.day}"
+                      par="${this.getHoleInfo(i + this.startingHole)}"
                     ></rbb-golf-score-select>
                   </td>
                   <td>
                     <rbb-golf-score-select
                       id="${this.team}-h${i + 1}-p2"
                       day="${this.day}"
+                      par="${this.getHoleInfo(i + this.startingHole)}"
                     ></rbb-golf-score-select>
                   </td>
                   <td>
                     <rbb-golf-score-view
                       id="${this.teamOther}-h${i + 1}-p1"
                       day="${this.day}"
+                      par="${this.getHoleInfo(i + this.startingHole)}"
                     ></rbb-golf-score-view>
                   </td>
                   <td>
                     <rbb-golf-score-view
                       id="${this.teamOther}-h${i + 1}-p2"
                       day="${this.day}"
+                      par="${this.getHoleInfo(i + this.startingHole)}"
                     ></rbb-golf-score-view>
                   </td>
                 </tr>`

@@ -11,6 +11,8 @@ export class GolfScoreView extends LitElement {
 
   @property({ type: String }) day = '';
 
+  @property({ type: String }) par = '';
+
   @state() team = '';
 
   @state() hole = '';
@@ -28,6 +30,12 @@ export class GolfScoreView extends LitElement {
         display: inline-block;
         margin-bottom: 1rem;
         font-size: 1.4rem;
+      }
+      .low-score {
+        color: limegreen;
+      }
+      .high-score {
+        color: red;
       }
     `,
   ];
@@ -54,6 +62,13 @@ export class GolfScoreView extends LitElement {
   }
 
   render() {
-    return html`<span>${this.pScore === 0 ? '--' : this.pScore}</span>`;
+    let cssClass = '';
+    if (this.pScore < Number(this.par)) cssClass = 'low-score';
+    if (this.pScore > Number(this.par)) cssClass = 'high-score';
+    if (this.pScore === 0) cssClass = '';
+
+    return html`<span class="${cssClass}"
+      >${this.pScore === 0 ? '--' : this.pScore}</span
+    >`;
   }
 }

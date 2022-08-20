@@ -12,6 +12,8 @@ export class GolfScoreSelect extends LitElement {
 
   @property({ type: String }) day = '';
 
+  @property({ type: String }) par = '';
+
   @state() team = '';
 
   @state() hole = '';
@@ -32,6 +34,12 @@ export class GolfScoreSelect extends LitElement {
       }
       select {
         font-size: 1.25rem;
+      }
+      .low-score {
+        color: limegreen;
+      }
+      .high-score {
+        color: red;
       }
     `,
   ];
@@ -58,7 +66,8 @@ export class GolfScoreSelect extends LitElement {
   }
 
   private onChange(evt: any) {
-    const playerScore = Number(evt.target.value);
+    const selectEle = evt.target as HTMLSelectElement;
+    const playerScore = Number(selectEle.value);
     // // const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`; // if using fb SET
     const dbUrl = `/${this.team}/${this.day}/${this.hole}`; // using fb UPDATE
 
@@ -66,9 +75,13 @@ export class GolfScoreSelect extends LitElement {
     if (this.player === 'p1') pScoreObj.p1 = playerScore;
     if (this.player === 'p2') pScoreObj.p2 = playerScore;
 
-    update(ref(getDatabase(), dbUrl), pScoreObj).catch(err =>
-      storeSvc.errors$.next(err.message)
-    );
+    update(ref(getDatabase(), dbUrl), pScoreObj)
+      .then(() => {
+        if (playerScore < Number(this.par)) selectEle.style.color = 'limegreen';
+        if (playerScore > Number(this.par)) selectEle.style.color = 'red';
+        if (playerScore === 0) selectEle.style.color = 'black';
+      })
+      .catch(err => storeSvc.errors$.next(err.message));
   }
 
   render() {
@@ -81,8 +94,15 @@ export class GolfScoreSelect extends LitElement {
     // const cutoffTimeInPast = new Date(`${this.day}T15:30:00.000Z`).getTime();
     const isDisabledPast = false; // Date.now() < cutoffTimeInPast ? 'disabled' : '';
 
-    if (isDisabledFuture || isDisabledPast)
-      return html`<span>${this.pScore === 0 ? '--' : this.pScore}</span>`;
+    if (isDisabledFuture || isDisabledPast) {
+      let cssClass = '';
+      if (this.pScore < Number(this.par)) cssClass = 'low-score';
+      if (this.pScore > Number(this.par)) cssClass = 'high-score';
+      if (this.pScore === 0) cssClass = '';
+      return html`<span class="${cssClass}"
+        >${this.pScore === 0 ? '--' : this.pScore}</span
+      >`;
+    }
 
     return html`
       <select @change="${e => this.onChange(e)}">
