@@ -112,7 +112,7 @@ export class Settings extends LitElement {
         </section>
         <br />
         <section>
-          <article>${this.hasDbConn}</article>
+          <article>Is connected? ${this.hasDbConn}</article>
         </section>
         <br />
         <section>
