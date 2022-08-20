@@ -185,13 +185,18 @@ export class AppHeader extends LitElement {
   created() {
     console.log('APP_HEADER-Created!');
     function handleVisibilityChange() {
-      console.log(
-        'document.visibilityStatedocument.visibilityStatedocument.visibilityState'
-      );
+      console.log('...visibilityState....visibilityState...');
       console.log(document.visibilityState);
     }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange, false);
+    document.addEventListener('visibilitychange', handleVisibilityChange, { once: true});
+    
+    function handlePagehide(evt) {
+      console.log('-----handlePagehide----handlePagehide-----');
+      console.log(evt);
+    }
+
+    globalThis.addEventListener('pagehide', handlePagehide, { once: true});
 
     setInterval(() => {
       this.checkSvcWorkerOnServer();
