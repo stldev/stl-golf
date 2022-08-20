@@ -16,6 +16,8 @@ export class AppHeader extends LitElement {
 
   @state() dayDisplay = '';
 
+  @state() hasDbConn = true;
+
   @state() newUpdateReady = false;
 
   @query('#mySidenav') _sideNav: HTMLDivElement;
@@ -183,21 +185,6 @@ export class AppHeader extends LitElement {
   }
 
   created() {
-    console.log('APP_HEADER-Created!');
-    function handleVisibilityChange() {
-      console.log('...visibilityState....visibilityState...');
-      console.log(document.visibilityState);
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange, false);
-    
-    function handlePagehide(evt) {
-      console.log('-----handlePagehide----handlePagehide-----');
-      console.log(evt);
-    }
-
-    globalThis.addEventListener('pagehide', handlePagehide, false);
-
     setInterval(() => {
       this.checkSvcWorkerOnServer();
     }, 45000);
@@ -214,9 +201,14 @@ export class AppHeader extends LitElement {
       this.newUpdateReady = !!uReady;
     });
 
+    const sub4 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
+      this.hasDbConn = hasDbConn;
+    });
+
     this.allSubs.add(sub1);
     this.allSubs.add(sub2);
     this.allSubs.add(sub3);
+    this.allSubs.add(sub4);
   }
 
   private openNav() {
@@ -286,6 +278,7 @@ export class AppHeader extends LitElement {
         <span @click="${this.openNav}" class="mobile-nav-open-icon"
           >&#9776;</span
         >
+        ${this.hasDbConn ? '' : html`<strong style="color:red;">✖</strong>`}
         ${this.newUpdateReady
           ? html`<button
               style="padding: 0.1rem"

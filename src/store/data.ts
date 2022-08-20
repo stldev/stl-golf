@@ -9,6 +9,8 @@ class StoreService {
     schedule: true,
   };
 
+  public hasDbConn$ = new ReplaySubject<boolean>(1);
+
   public course$ = new ReplaySubject<any>(1);
 
   public teamRoster$ = new ReplaySubject<any>(1);
@@ -32,6 +34,22 @@ class StoreService {
   init() {
     const team = localStorage.getItem('woodchopper-team') || '';
     this.authHandler(team);
+    setTimeout(() => {
+      this.getConnectionState();
+    }, 555);
+  }
+
+  getConnectionState() {
+    const connectedRef = ref(getDatabase(), '.info/connected');
+    onValue(connectedRef, snap => {
+      if (snap.val() === true) {
+        console.log('connected');
+        this.hasDbConn$.next(true);
+      } else {
+        console.log('NOT connected :(');
+        this.hasDbConn$.next(false);
+      }
+    });
   }
 
   setPristine() {
