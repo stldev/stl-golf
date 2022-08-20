@@ -45,11 +45,11 @@ export class Settings extends LitElement {
 
     document.addEventListener(
       'visibilitychange',
-      this.handleVisibilityChange,
+      () => this.handleVisibilityChange,
       false
     );
 
-    globalThis.addEventListener('pagehide', this.handlePagehide, false);
+    globalThis.addEventListener('pagehide', () => this.handlePagehide, false);
 
     const sub1 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
       this.hasDbConn = hasDbConn;
