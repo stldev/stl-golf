@@ -14,7 +14,7 @@ export class Settings extends LitElement {
 
   @state() hasDbConn = true;
 
-  @state() pageHideLogs = [];
+  @state() visibilityState = [];
 
   @state() allSubs = new Subscription();
 
@@ -43,25 +43,16 @@ export class Settings extends LitElement {
   created() {
     console.log('SETTINGS-Created!');
 
-    document.addEventListener(
-      'visibilitychange',
-      () => this.handleVisibilityChange(),
-      false
-    );
-
     const sub1 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
       this.hasDbConn = hasDbConn;
     });
 
-    this.allSubs.add(sub1);
-  }
+    const sub2 = storeSvc.visibilityState$.subscribe(visibilityState => {
+      this.visibilityState = visibilityState;
+    });
 
-  handleVisibilityChange() {
-    console.log('document.visibilityState: ', document.visibilityState);
-    const timestamp = new Date().toLocaleString();
-    this.pageHideLogs = this.pageHideLogs.concat([
-      `${timestamp}-visibilityState-${document.visibilityState}`,
-    ]);
+    this.allSubs.add(sub1);
+    this.allSubs.add(sub2);
   }
 
   disconnectedCallback() {
@@ -109,7 +100,7 @@ export class Settings extends LitElement {
         </section>
         <br />
         <section>
-          ${this.pageHideLogs.map(
+          ${this.visibilityState.map(
             p =>
               html`<article>${p}</article>
                 <br />`

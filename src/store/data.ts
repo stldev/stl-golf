@@ -19,6 +19,8 @@ class StoreService {
 
   public currentTeam$ = new ReplaySubject<string>(1);
 
+  public visibilityState$ = new ReplaySubject<any[]>(1);
+
   public day$ = new ReplaySubject<string>(1);
 
   public errors$ = new ReplaySubject<string>(1);
@@ -36,7 +38,7 @@ class StoreService {
     this.authHandler(team);
     setTimeout(() => {
       this.getConnectionState();
-    }, 555);
+    }, 750);
   }
 
   getConnectionState() {
@@ -96,6 +98,7 @@ class StoreService {
       console.log('DATA-getRoster');
       const scheduleDb = ref(getDatabase(), `/${team}/roster`);
       onValue(scheduleDb, snapshot => {
+        console.log('this.teamRoster$.next-VAL', snapshot.val());
         this.teamRoster$.next(snapshot.val() || {});
       });
 
