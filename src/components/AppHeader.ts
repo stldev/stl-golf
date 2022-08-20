@@ -183,6 +183,17 @@ export class AppHeader extends LitElement {
   }
 
   created() {
+    function handleVisibilityChange() {
+      console.log(
+        'document.visibilityStatedocument.visibilityStatedocument.visibilityState'
+      );
+      console.log(document.visibilityState);
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange, {
+      once: true,
+    });
+
     setInterval(() => {
       this.checkSvcWorkerOnServer();
     }, 45000);
