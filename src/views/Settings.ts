@@ -43,6 +43,8 @@ export class Settings extends LitElement {
   }
 
   created() {
+    if (globalThis.ApplePaySession) globalThis.location.reload();
+
     const sub1 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
       this.hasDbConn = hasDbConn;
     });
