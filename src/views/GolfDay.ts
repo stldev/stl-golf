@@ -337,7 +337,7 @@ export class GolfDay extends LitElement {
           ${Array(9)
             .fill(0)
             .map(
-              (hole, i) =>
+              (_, i) =>
                 html`<tr>
                   <td
                     class="h${i + this.startingHole}"

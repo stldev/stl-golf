@@ -15,6 +15,8 @@ export class GameDay extends LitElement {
 
   @state() day = '';
 
+  @state() course = null;
+
   @state() startingHole = 10;
 
   static styles = [
@@ -44,7 +46,11 @@ export class GameDay extends LitElement {
       const pair = s[this.day] || {};
       if (pair.isFront) this.startingHole = 1;
     });
+    const sub2 = storeSvc.course$.subscribe(c => {
+      this.course = c;
+    });
     this.allSubs.add(sub1);
+    this.allSubs.add(sub2);
     if (super.connectedCallback) super.connectedCallback();
   }
 
@@ -77,19 +83,43 @@ export class GameDay extends LitElement {
         Object.entries(teams).forEach(([teamName, holes]) => {
           if (holes) {
             Object.entries(holes).forEach(([hole, scores]) => {
-              const p1Ele = this.shadowRoot?.querySelector(
-                `#${teamName}-${hole}-p1`
-              ) as HTMLSelectElement;
+              if (hole.startsWith('h')) {
+                const holeNum =
+                  Number(hole.replace('h', '')) - 1 + this.startingHole;
+                const par = this.course[`h${holeNum}`]?.par || '';
 
-              // eslint-disable-next-line prefer-destructuring
-              if (p1Ele) p1Ele.textContent = (scores as any).p1 || '--';
+                const p1Ele = this.shadowRoot?.querySelector(
+                  `#${teamName}-${hole}-p1`
+                ) as HTMLSelectElement;
 
-              const p2Ele = this.shadowRoot?.querySelector(
-                `#${teamName}-${hole}-p2`
-              ) as HTMLSelectElement;
+                if (scores.p1) {
+                  if (p1Ele) {
+                    p1Ele.textContent = scores.p1;
+                    if (scores.p1 < par) p1Ele.style.color = 'mediumseagreen';
+                    if (scores.p1 > par) p1Ele.style.color = 'red';
+                  }
+                }
 
-              // eslint-disable-next-line prefer-destructuring
-              if (p2Ele) p2Ele.textContent = (scores as any).p2 || '--';
+                if (!scores.p1) {
+                  if (p1Ele) p1Ele.textContent = '--';
+                }
+
+                const p2Ele = this.shadowRoot?.querySelector(
+                  `#${teamName}-${hole}-p2`
+                ) as HTMLSelectElement;
+
+                if (scores.p2) {
+                  if (p2Ele) {
+                    p2Ele.textContent = scores.p2;
+                    if (scores.p2 < par) p2Ele.style.color = 'mediumseagreen';
+                    if (scores.p2 > par) p2Ele.style.color = 'red';
+                  }
+                }
+
+                if (!scores.p2) {
+                  if (p2Ele) p2Ele.textContent = '--';
+                }
+              }
             });
           }
         });
@@ -97,6 +127,11 @@ export class GameDay extends LitElement {
     });
 
     this.allSubs.add(sub1);
+  }
+
+  private getHoleInfo(holeNumber: number) {
+    if (!this.course) return '';
+    return this.course[`h${holeNumber}`]?.par || '';
   }
 
   getTeamByHole(i: number) {
@@ -136,7 +171,7 @@ export class GameDay extends LitElement {
         </header>
         <table>
           <tr>
-            <td>Hole</td>
+            <td># (par)</td>
             ${this.getTeamsHeader()}
           </tr>
           ${Array(9)
@@ -144,7 +179,10 @@ export class GameDay extends LitElement {
             .map(
               (hole, i) =>
                 html`<tr>
-                  <td style="font-size: 1.5rem;">${i + this.startingHole}</td>
+                  <td style="font-size: 1.25rem;">
+                    ${i + this.startingHole}
+                    (${this.getHoleInfo(i + this.startingHole)})
+                  </td>
                   ${this.getTeamByHole(i)}
                 </tr>`
             )}
