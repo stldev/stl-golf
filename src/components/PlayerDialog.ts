@@ -73,20 +73,10 @@ export class PlayerDialog extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  firstUpdated() {
-    this._watchEscape = this._watchEscape.bind(this);
-  }
-
   close() {
     this.open = false;
     const closeEvent = new CustomEvent('dialog-closed');
     this.dispatchEvent(closeEvent);
-  }
-
-  _watchEscape(event) {
-    if (event.key === 'Escape') {
-      this.close();
-    }
   }
 
   render() {

@@ -69,8 +69,11 @@ export class GolfDay extends LitElement {
         padding: 0.3rem 0.6rem;
         width: 98%;
       }
+      td,
+      span,
       #p1 {
         user-select: none;
+        -webkit-user-select: none;
         -webkit-touch-callout: none;
       }
       #launch-dialog {
