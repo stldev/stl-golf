@@ -6,6 +6,7 @@ export async function authGuard(context: any, commands: any) {
   if (team) {
     storeSvc.getCourse();
     storeSvc.getSchedule(team);
+    storeSvc.checkSvcWorkerOnServer();
     return undefined;
   }
 

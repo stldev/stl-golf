@@ -40,10 +40,6 @@ class StoreService {
       this.getConnectionState();
     }, 999);
 
-    setInterval(() => {
-      this.checkSvcWorkerOnServer();
-    }, 60000);
-
     document.addEventListener(
       'visibilitychange',
       () => {
