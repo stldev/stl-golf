@@ -8,7 +8,7 @@ import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-settings')
 export class Settings extends LitElement {
-  @query('button') updateBtnEle: HTMLButtonElement;
+  @query('#CheckUpdatesBtn') updateBtnEle: HTMLButtonElement;
 
   @state() updateBtnText = 'Check for updates';
 
@@ -112,7 +112,10 @@ export class Settings extends LitElement {
         <section>
           ${this.newUpdateAvailable
             ? ''
-            : html` <button @click="${() => this.checkForUpdates()}">
+            : html` <button
+                id="CheckUpdatesBtn"
+                @click="${() => this.checkForUpdates()}"
+              >
                 ${this.updateBtnText}
               </button>`}
         </section>
