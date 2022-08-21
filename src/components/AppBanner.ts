@@ -20,8 +20,6 @@ export class AppBanner extends LitElement {
 
   @state() msgLink = '';
 
-  @state() newUpdateReady = false;
-
   static styles = [
     mvpCss,
     css`
