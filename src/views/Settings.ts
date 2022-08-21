@@ -14,6 +14,8 @@ export class Settings extends LitElement {
 
   @state() hasDbConn = true;
 
+  @state() newUpdateAvailable = false;
+
   @state() visibilityState = [];
 
   @state() allSubs = new Subscription();
@@ -49,8 +51,13 @@ export class Settings extends LitElement {
       this.visibilityState = visibilityState;
     });
 
+    const sub3 = storeSvc.bannerMessage$.subscribe(bannerMessage => {
+      this.newUpdateAvailable = bannerMessage?.type === 'app-update';
+    });
+
     this.allSubs.add(sub1);
     this.allSubs.add(sub2);
+    this.allSubs.add(sub3);
   }
 
   disconnectedCallback() {
@@ -64,7 +71,11 @@ export class Settings extends LitElement {
     const swReg = await navigator.serviceWorker.getRegistration();
     console.log('checkForUpdates-swReg', swReg);
     if (swReg?.waiting) {
-      storeSvc.newUpdateReady$.next(true);
+      storeSvc.bannerMessage$.next({
+        type: 'app-update',
+        text: 'New update available!',
+        link: '/settings',
+      });
       this.updateBtnEle.disabled = false;
       this.updateBtnEle.textContent = this.updateBtnText;
     } else {
@@ -74,16 +85,41 @@ export class Settings extends LitElement {
     }
   }
 
+  async applyUpdate() {
+    const swReg = await navigator.serviceWorker.getRegistration();
+    swReg?.waiting.postMessage({ type: 'SKIP_WAITING' });
+
+    storeSvc.bannerMessage$.next({});
+
+    if (globalThis.ApplePaySession) {
+      await new Promise(resolve => setTimeout(() => resolve(''), 777));
+      globalThis.location.reload();
+    }
+
+    if (!globalThis.ApplePaySession) {
+      setTimeout(() => {
+        globalThis.location.reload();
+      }, 777);
+    }
+  }
+
   render() {
     return html`
       <main>
         <header>
+          ${this.newUpdateAvailable
+            ? html`<button @click="${() => this.applyUpdate()}">
+                APPLY UPDATE
+              </button>`
+            : ''}
           <h2>App Settings</h2>
         </header>
         <section>
-          <button @click="${() => this.checkForUpdates()}">
-            ${this.updateBtnText}
-          </button>
+          ${this.newUpdateAvailable
+            ? ''
+            : html` <button @click="${() => this.checkForUpdates()}">
+                ${this.updateBtnText}
+              </button>`}
         </section>
         <br />
         <section>

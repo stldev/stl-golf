@@ -2,6 +2,7 @@ import { Route, Router } from '@vaadin/router';
 import { authGuard } from './services/auth-guard';
 import './app';
 import './components/AppHeader';
+import './components/AppBanner';
 import './components/GolfScoreSelect';
 import './components/GolfScoreView';
 import './components/PlayerDialog';

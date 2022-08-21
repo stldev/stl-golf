@@ -33,7 +33,7 @@ class StoreService {
 
   public allTeamsToday$ = new ReplaySubject<any>(1);
 
-  public newUpdateReady$ = new ReplaySubject<boolean>(1);
+  public bannerMessage$ = new ReplaySubject<any>(1);
 
   init() {
     const team = localStorage.getItem('woodchopper-team') || '';
@@ -64,7 +64,11 @@ class StoreService {
     if (swReg) {
       if (swReg.waiting) {
         console.log('swReg.waiting=TRUE', swReg);
-        this.newUpdateReady$.next(true);
+        this.bannerMessage$.next({
+          type: 'app-update',
+          text: 'New update available!',
+          link: '/settings',
+        });
       } else {
         console.log('swReg.update()');
         swReg.update();

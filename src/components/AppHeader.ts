@@ -18,8 +18,6 @@ export class AppHeader extends LitElement {
 
   @state() hasDbConn = true;
 
-  @state() newUpdateReady = false;
-
   @query('#mySidenav') _sideNav: HTMLDivElement;
 
   @query('#backdrop') _backDrop: HTMLDivElement;
@@ -151,24 +149,6 @@ export class AppHeader extends LitElement {
     if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
-  async applyUpdate() {
-    const swReg = await navigator.serviceWorker.getRegistration();
-    swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
-
-    storeSvc.newUpdateReady$.next(false);
-
-    if (globalThis.ApplePaySession) {
-      await new Promise(resolve => setTimeout(() => resolve(''), 777));
-      globalThis.location.reload();
-    }
-
-    if (!globalThis.ApplePaySession) {
-      setTimeout(() => {
-        globalThis.location.reload();
-      }, 777);
-    }
-  }
-
   created() {
     const sub1 = storeSvc.currentTeam$.subscribe(curTeam => {
       this.curTeamName = curTeam || '';
@@ -178,17 +158,12 @@ export class AppHeader extends LitElement {
       this.dayDisplay = theDay || '';
     });
 
-    const sub3 = storeSvc.newUpdateReady$.subscribe(uReady => {
-      this.newUpdateReady = !!uReady;
-    });
-
     const sub4 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
       this.hasDbConn = hasDbConn;
     });
 
     this.allSubs.add(sub1);
     this.allSubs.add(sub2);
-    this.allSubs.add(sub3);
     this.allSubs.add(sub4);
   }
 
@@ -260,14 +235,6 @@ export class AppHeader extends LitElement {
           >&#9776;</span
         >
         ${this.hasDbConn ? '' : html`<strong style="color:red;">✖</strong>`}
-        ${this.newUpdateReady
-          ? html`<button
-              style="padding: 0.1rem"
-              @click="${() => this.applyUpdate()}"
-            >
-              apply update
-            </button>`
-          : ''}
         ${this.dayDisplay} &nbsp; ${this.curTeamName} 🌲 &#x1FA93; &nbsp;
       </nav>
     `;
