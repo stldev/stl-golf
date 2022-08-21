@@ -32,7 +32,7 @@ export class GolfScoreView extends LitElement {
         font-size: 1.4rem;
       }
       .low-score {
-        color: limegreen;
+        color: mediumseagreen;
       }
       .high-score {
         color: red;

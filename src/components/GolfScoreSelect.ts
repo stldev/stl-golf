@@ -36,7 +36,7 @@ export class GolfScoreSelect extends LitElement {
         font-size: 1.25rem;
       }
       .low-score {
-        color: limegreen;
+        color: mediumseagreen;
       }
       .high-score {
         color: red;
@@ -68,6 +68,7 @@ export class GolfScoreSelect extends LitElement {
   private onChange(evt: any) {
     const selectEle = evt.target as HTMLSelectElement;
     const playerScore = Number(selectEle.value);
+    const parNum = Number(this.par);
     // // const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`; // if using fb SET
     const dbUrl = `/${this.team}/${this.day}/${this.hole}`; // using fb UPDATE
 
@@ -77,9 +78,10 @@ export class GolfScoreSelect extends LitElement {
 
     update(ref(getDatabase(), dbUrl), pScoreObj)
       .then(() => {
-        if (playerScore < Number(this.par)) selectEle.style.color = 'limegreen';
-        if (playerScore > Number(this.par)) selectEle.style.color = 'red';
-        if (playerScore === 0) selectEle.style.color = 'black';
+        if (playerScore < parNum) selectEle.style.color = 'mediumseagreen';
+        if (playerScore > parNum) selectEle.style.color = 'red';
+        if (playerScore === parNum) selectEle.style.color = '';
+        if (playerScore === 0) selectEle.style.color = '';
       })
       .catch(err => storeSvc.errors$.next(err.message));
   }
