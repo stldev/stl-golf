@@ -51,7 +51,7 @@ export class AppBanner extends LitElement {
 
   created() {
     const sub1 = storeSvc.bannerMessage$.subscribe(bannerMessage => {
-      console.log('bannerMessage', bannerMessage);
+      console.log('bannerMessage===', bannerMessage);
       this.msgType = bannerMessage?.type || '';
       this.msgText = bannerMessage?.text || '';
       this.msgLink = bannerMessage?.link || '';
