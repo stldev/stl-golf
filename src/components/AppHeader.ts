@@ -159,13 +159,11 @@ export class AppHeader extends LitElement {
 
     if (globalThis.ApplePaySession) {
       await new Promise(resolve => setTimeout(() => resolve(''), 777));
-      console.log('PROMISE-wait-done');
       globalThis.location.reload();
     }
 
     if (!globalThis.ApplePaySession) {
       setTimeout(() => {
-        console.log('TIME_OUT-wait-done');
         globalThis.location.reload();
       }, 777);
     }

@@ -49,7 +49,6 @@ class StoreService {
     document.addEventListener(
       'visibilitychange',
       () => {
-        console.log('document.visibilityState: ', document.visibilityState);
         const timestamp = new Date().toLocaleString();
         this.visibilityStateLog = this.visibilityStateLog.concat([
           `${timestamp}-visibilityState-${document.visibilityState}`,
@@ -77,10 +76,8 @@ class StoreService {
     const connectedRef = ref(getDatabase(), '.info/connected');
     onValue(connectedRef, snap => {
       if (snap.val() === true) {
-        console.log('connected');
         this.hasDbConn$.next(true);
       } else {
-        console.log('NOT connected :(');
         this.hasDbConn$.next(false);
       }
     });

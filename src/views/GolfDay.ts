@@ -110,7 +110,6 @@ export class GolfDay extends LitElement {
       }, []);
 
       this.teamRoster = teamRoster;
-      console.log('teamRoster', teamRoster);
     });
 
     this.allSubs.add(sub1);
@@ -154,7 +153,6 @@ export class GolfDay extends LitElement {
       if (this.touchStart > 4) {
         console.log('IS-LONG-PRESS');
         (this.playerDialogEle as any).open = true;
-        this.p1Ele.style.color = 'red';
         this.touchStart = 0;
         globalThis.clearInterval(this.touchStartRef);
       }

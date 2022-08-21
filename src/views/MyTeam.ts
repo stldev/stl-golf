@@ -56,7 +56,6 @@ export class MyTeam extends LitElement {
       }, []);
 
       this.teamRoster = teamRoster;
-      console.log('teamRoster', teamRoster);
     });
     this.allSubs.add(sub1);
 

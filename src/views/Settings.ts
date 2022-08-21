@@ -41,8 +41,6 @@ export class Settings extends LitElement {
   }
 
   created() {
-    console.log('SETTINGS-Created!');
-
     const sub1 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
       this.hasDbConn = hasDbConn;
     });

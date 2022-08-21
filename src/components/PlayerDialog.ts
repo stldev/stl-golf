@@ -45,7 +45,7 @@ export class PlayerDialog extends LitElement {
         width: 100%;
       }
       .dialog {
-        background: #ffffff;
+        background: #fff;
         width: 85%;
         padding: 1rem;
         position: fixed;
