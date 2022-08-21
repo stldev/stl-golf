@@ -21,6 +21,7 @@ export class RbbApp extends LitElement {
   render() {
     return html`
       <rbb-app-header></rbb-app-header>
+      <br /><br />
       <slot></slot>
     `;
   }
