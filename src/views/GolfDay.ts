@@ -104,7 +104,9 @@ export class GolfDay extends LitElement {
       #MyTeam .p1,
       #MyTeam .p2 {
         border: 1px solid blue;
-        padding: 0.25rem;
+        padding: 0.3rem;
+        color: white;
+        background-color: blue;
       }
     `,
   ];
@@ -191,7 +193,7 @@ export class GolfDay extends LitElement {
 
   checkIfLongPress(player: string) {
     this.touchStartRef = setInterval(() => {
-      if (this.touchStart > 3) {
+      if (this.touchStart > 2) {
         console.log('IS-LONG-PRESS');
         (this.playerDialogEle as any).open = true;
         (this.playerDialogEle as any).currentPlayerSelected = player;
@@ -318,7 +320,7 @@ export class GolfDay extends LitElement {
       <article>
         <table>
           <tr>
-            <td>Hole (Par)</td>
+            <td># (par)</td>
             <td id="MyTeam" colspan="2">
               ${this.team?.toUpperCase()} <br />
               <span class="p1">p1</span>
