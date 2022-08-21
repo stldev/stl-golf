@@ -3,8 +3,6 @@ import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 class StoreService {
-  private visibilityStateLog = [];
-
   private pristine = {
     course: true,
     roster: true,
@@ -40,6 +38,7 @@ class StoreService {
     this.authHandler(team);
     setTimeout(() => {
       this.getConnectionState();
+      this.checkSvcWorkerOnServer();
     }, 999);
 
     setInterval(() => {
@@ -50,10 +49,10 @@ class StoreService {
       'visibilitychange',
       () => {
         const timestamp = new Date().toLocaleString();
-        this.visibilityStateLog = this.visibilityStateLog.concat([
+        const visibilityStateLog = [
           `${timestamp}-visibilityState-${document.visibilityState}`,
-        ]);
-        this.visibilityState$.next(this.visibilityStateLog);
+        ];
+        this.visibilityState$.next(visibilityStateLog);
       },
       false
     );
