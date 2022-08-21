@@ -40,7 +40,7 @@ class StoreService {
     this.authHandler(team);
     setTimeout(() => {
       this.getConnectionState();
-    }, 750);
+    }, 999);
 
     setInterval(() => {
       this.checkSvcWorkerOnServer();
