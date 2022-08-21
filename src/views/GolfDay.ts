@@ -37,7 +37,13 @@ export class GolfDay extends LitElement {
 
   @query('rbb-player-dialog') playerDialogEle: HTMLElement;
 
-  @query('#p1') p1Ele: HTMLSpanElement;
+  @query('#MyTeam .p1') myTeamP1Ele: HTMLSpanElement;
+
+  @query('#MyTeam .p2') myTeamP2Ele: HTMLSpanElement;
+
+  @query('#OtherTeam .p1') otherTeamP1Ele: HTMLSpanElement;
+
+  @query('#OtherTeam .p2') otherTeamP2Ele: HTMLSpanElement;
 
   @query('#total-team-p1') totalTeamP1Ele: HTMLTableElement;
 
@@ -67,7 +73,6 @@ export class GolfDay extends LitElement {
       }
       table td {
         padding: 0.3rem 0.6rem;
-        width: 98%;
       }
       td,
       span,
@@ -83,6 +88,18 @@ export class GolfDay extends LitElement {
         font-family: Helvetica, Arial, sans-serif;
         padding: 0.5rem 1rem;
         position: static;
+      }
+      #MyTeam {
+        color: blue;
+        font-weight: bold;
+      }
+      .foo-bar {
+        width: 20%;
+      }
+      .p1,
+      .p2 {
+        font-size: large;
+        font-weight: bold;
       }
     `,
   ];
@@ -119,6 +136,16 @@ export class GolfDay extends LitElement {
     if (super.connectedCallback) super.connectedCallback();
   }
 
+  // onDestroy
+  disconnectedCallback() {
+    // this.myTeamP1Ele.removeEventListener('touchstart', this.checkIfLongPress);
+    // this.myTeamP2Ele.removeEventListener('touchstart', this.checkIfLongPress);
+    storeSvc.day$.next('');
+    storeSvc.errors$.next('');
+    this.allSubs.unsubscribe();
+    if (super.disconnectedCallback) super.disconnectedCallback();
+  }
+
   protected firstUpdated() {
     const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
     // don't like this, but DISCONNECTED (from other component) is fired AFTER this components startup hooks
@@ -126,46 +153,41 @@ export class GolfDay extends LitElement {
       storeSvc.day$.next(theDay);
     }, 50);
 
-    this.p1Ele.addEventListener(
+    this.myTeamP1Ele.addEventListener(
       'touchstart',
-      () => {
-        // evt.preventDefault();
-        this.checkIfLongPress();
-      },
+      () => this.checkIfLongPress('p1'),
+      { passive: true }
+    );
+    this.myTeamP2Ele.addEventListener(
+      'touchstart',
+      () => this.checkIfLongPress('p2'),
       { passive: true }
     );
 
-    this.p1Ele.addEventListener(
-      'touchend',
-      evt => {
-        evt.preventDefault();
-        this.touchStart = 0;
-        globalThis.clearInterval(this.touchStartRef);
-      }
-      // { passive: true }
-    );
+    this.myTeamP1Ele.addEventListener('touchend', evt => {
+      evt.preventDefault();
+      this.touchStart = 0;
+      globalThis.clearInterval(this.touchStartRef);
+    });
+
+    this.myTeamP2Ele.addEventListener('touchend', evt => {
+      evt.preventDefault();
+      this.touchStart = 0;
+      globalThis.clearInterval(this.touchStartRef);
+    });
   }
 
-  checkIfLongPress() {
+  checkIfLongPress(player: string) {
     this.touchStartRef = setInterval(() => {
-      console.log('this.touchStartRef');
-
-      if (this.touchStart > 4) {
+      if (this.touchStart > 3) {
         console.log('IS-LONG-PRESS');
         (this.playerDialogEle as any).open = true;
+        (this.playerDialogEle as any).currentPlayerSelected = player;
         this.touchStart = 0;
         globalThis.clearInterval(this.touchStartRef);
       }
       this.touchStart += 1;
     }, 250) as unknown as number;
-  }
-
-  // onDestroy
-  disconnectedCallback() {
-    storeSvc.day$.next('');
-    storeSvc.errors$.next('');
-    this.allSubs.unsubscribe();
-    if (super.disconnectedCallback) super.disconnectedCallback();
   }
 
   protected updated(_changedProps: Map<string | number | symbol, unknown>) {
@@ -206,6 +228,8 @@ export class GolfDay extends LitElement {
   setOtherTeam(holeAndScore: any) {
     let totalP1 = 0;
     let totalP2 = 0;
+    this.otherTeamP1Ele.textContent = holeAndScore.p1 || 'P_1';
+    this.otherTeamP2Ele.textContent = holeAndScore.p2 || 'P_2';
     Object.entries(holeAndScore).forEach(([hole, scores]) => {
       totalP1 += (scores as any).p1 || 0;
       totalP2 += (scores as any).p2 || 0;
@@ -230,6 +254,8 @@ export class GolfDay extends LitElement {
   setMyTeam(holeAndScore: any) {
     let totalP1 = 0;
     let totalP2 = 0;
+    this.myTeamP1Ele.textContent = holeAndScore.p1 || 'P_1';
+    this.myTeamP2Ele.textContent = holeAndScore.p2 || 'P_2';
     Object.entries(holeAndScore).forEach(([hole, scores]) => {
       totalP1 += (scores as any).p1 || 0;
       totalP2 += (scores as any).p2 || 0;
@@ -274,21 +300,24 @@ export class GolfDay extends LitElement {
 
   render() {
     return html`
-      <rbb-player-dialog>
+      <rbb-player-dialog day="${this.day}">
         <span slot="heading">Set Player</span>
       </rbb-player-dialog>
       <article>
         <table>
           <tr>
             <td>Hole (Par)</td>
-            <td style="color: blue; font-weight: bold;" colspan="2">
-              ${this.team} <br />
-              <span id="p1">Player1</span>
-              &nbsp; Player2
+            <td id="MyTeam" colspan="2">
+              ${this.team?.toUpperCase()} <br />
+              <span class="p1">p1</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="p2">p2</span>
             </td>
-            <td colspan="2">
+            <td id="OtherTeam" colspan="2">
               ${this.teamOther} <br />
-              Player1&nbsp;Player2
+              <span class="p1">p1</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="p2">p2</span>
             </td>
           </tr>
           ${Array(9)
@@ -303,28 +332,28 @@ export class GolfDay extends LitElement {
                     ${i + this.startingHole}
                     (${this.getHoleInfo(i + this.startingHole)})
                   </td>
-                  <td>
+                  <td class="foo-bar">
                     <rbb-golf-score-select
                       id="${this.team}-h${i + 1}-p1"
                       day="${this.day}"
                       par="${this.getHoleInfo(i + this.startingHole)}"
                     ></rbb-golf-score-select>
                   </td>
-                  <td>
+                  <td class="foo-bar">
                     <rbb-golf-score-select
                       id="${this.team}-h${i + 1}-p2"
                       day="${this.day}"
                       par="${this.getHoleInfo(i + this.startingHole)}"
                     ></rbb-golf-score-select>
                   </td>
-                  <td>
+                  <td class="foo-bar">
                     <rbb-golf-score-view
                       id="${this.teamOther}-h${i + 1}-p1"
                       day="${this.day}"
                       par="${this.getHoleInfo(i + this.startingHole)}"
                     ></rbb-golf-score-view>
                   </td>
-                  <td>
+                  <td class="foo-bar">
                     <rbb-golf-score-view
                       id="${this.teamOther}-h${i + 1}-p2"
                       day="${this.day}"
