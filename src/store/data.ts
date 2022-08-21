@@ -38,7 +38,6 @@ class StoreService {
     this.authHandler(team);
     setTimeout(() => {
       this.getConnectionState();
-      this.checkSvcWorkerOnServer();
     }, 999);
 
     setInterval(() => {
@@ -58,7 +57,7 @@ class StoreService {
     );
   }
 
-  async checkSvcWorkerOnServer() {
+  public async checkSvcWorkerOnServer() {
     const swReg = await navigator.serviceWorker.getRegistration();
     if (swReg) {
       if (swReg.waiting) {
