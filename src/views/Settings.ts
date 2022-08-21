@@ -43,8 +43,6 @@ export class Settings extends LitElement {
   }
 
   created() {
-    if (globalThis.ApplePaySession) globalThis.location.reload();
-
     const sub1 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
       this.hasDbConn = hasDbConn;
     });
@@ -114,7 +112,7 @@ export class Settings extends LitElement {
                 APPLY UPDATE
               </button>`
             : ''}
-          <h2>Settings!</h2>
+          <h2>Settings</h2>
         </header>
         <section>
           ${this.newUpdateAvailable
