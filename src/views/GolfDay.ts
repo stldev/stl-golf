@@ -35,6 +35,8 @@ export class GolfDay extends LitElement {
 
   @query('table tbody') scoresTableEle: HTMLTableElement;
 
+  @query('rbb-player-dialog') playerDialogEle: HTMLElement;
+
   @query('#p1') p1Ele: HTMLSpanElement;
 
   @query('#total-team-p1') totalTeamP1Ele: HTMLTableElement;
@@ -70,6 +72,14 @@ export class GolfDay extends LitElement {
       #p1 {
         user-select: none;
         -webkit-touch-callout: none;
+      }
+      #launch-dialog {
+        background: tomato;
+        border-radius: 4px;
+        color: #fff;
+        font-family: Helvetica, Arial, sans-serif;
+        padding: 0.5rem 1rem;
+        position: static;
       }
     `,
   ];
@@ -116,8 +126,8 @@ export class GolfDay extends LitElement {
 
     this.p1Ele.addEventListener(
       'touchstart',
-      evt => {
-        evt.preventDefault();
+      () => {
+        // evt.preventDefault();
         this.checkIfLongPress();
       },
       { passive: true }
@@ -125,11 +135,12 @@ export class GolfDay extends LitElement {
 
     this.p1Ele.addEventListener(
       'touchend',
-      () => {
+      evt => {
+        evt.preventDefault();
         this.touchStart = 0;
         globalThis.clearInterval(this.touchStartRef);
-      },
-      { passive: true }
+      }
+      // { passive: true }
     );
   }
 
@@ -137,8 +148,9 @@ export class GolfDay extends LitElement {
     this.touchStartRef = setInterval(() => {
       console.log('this.touchStartRef');
 
-      if (this.touchStart > 8) {
+      if (this.touchStart > 4) {
         console.log('IS-LONG-PRESS');
+        (this.playerDialogEle as any).open = true;
         this.p1Ele.style.color = 'red';
         this.touchStart = 0;
         globalThis.clearInterval(this.touchStartRef);
@@ -261,6 +273,9 @@ export class GolfDay extends LitElement {
 
   render() {
     return html`
+      <rbb-player-dialog>
+        <span slot="heading">Set Player</span>
+      </rbb-player-dialog>
       <article>
         <table>
           <tr>

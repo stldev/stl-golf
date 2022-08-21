@@ -4,6 +4,7 @@ import './app';
 import './components/AppHeader';
 import './components/GolfScoreSelect';
 import './components/GolfScoreView';
+import './components/PlayerDialog';
 
 // https://vaadin.github.io/router/vaadin-router/demo/#vaadin-router-getting-started-demos
 const routes: Route[] = [
