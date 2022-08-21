@@ -77,6 +77,7 @@ export class GolfScoreSelect extends LitElement {
 
     update(ref(getDatabase(), dbUrl), pScoreObj)
       .then(() => {
+        selectEle.className = '';
         if (playerScore < parNum) selectEle.style.color = 'mediumseagreen';
         if (playerScore > parNum) selectEle.style.color = 'red';
         if (playerScore === parNum) selectEle.style.color = '';
@@ -95,18 +96,21 @@ export class GolfScoreSelect extends LitElement {
     // const cutoffTimeInPast = new Date(`${this.day}T15:30:00.000Z`).getTime();
     const isDisabledPast = false; // Date.now() < cutoffTimeInPast ? 'disabled' : '';
 
+    let cssClass = '';
+    const parNum = Number(this.par);
+    if (this.pScore < parNum) cssClass = 'low-score';
+    if (this.pScore > parNum) cssClass = 'high-score';
+    if (this.pScore === parNum) cssClass = '';
+    if (this.pScore === 0) cssClass = '';
+
     if (isDisabledFuture || isDisabledPast) {
-      let cssClass = '';
-      if (this.pScore < Number(this.par)) cssClass = 'low-score';
-      if (this.pScore > Number(this.par)) cssClass = 'high-score';
-      if (this.pScore === 0) cssClass = '';
       return html`<span class="${cssClass}"
         >${this.pScore === 0 ? '--' : this.pScore}</span
       >`;
     }
 
     return html`
-      <select @change="${e => this.onChange(e)}">
+      <select class="${cssClass}" @change="${e => this.onChange(e)}">
         ${Array(11)
           .fill(0)
           .map((_, i) => {
