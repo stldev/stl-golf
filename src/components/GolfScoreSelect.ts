@@ -69,7 +69,6 @@ export class GolfScoreSelect extends LitElement {
     const selectEle = evt.target as HTMLSelectElement;
     const playerScore = Number(selectEle.value);
     const parNum = Number(this.par);
-    // // const dbUrl = `/${this.team}/${this.day}/${this.hole}/${this.player}`; // if using fb SET
     const dbUrl = `/${this.team}/${this.day}/${this.hole}`; // using fb UPDATE
 
     const pScoreObj: any = {};
