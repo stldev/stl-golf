@@ -46,9 +46,10 @@ export class PlayerDialog extends LitElement {
       }
       .dialog {
         background: #ffffff;
-        max-width: 600px;
+        width: 85%;
         padding: 1rem;
         position: fixed;
+        top: 20%;
       }
       button {
         all: unset;
@@ -75,8 +76,6 @@ export class PlayerDialog extends LitElement {
 
   close() {
     this.open = false;
-    const closeEvent = new CustomEvent('dialog-closed');
-    this.dispatchEvent(closeEvent);
   }
 
   render() {
