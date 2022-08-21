@@ -21,6 +21,10 @@ export class GolfDay extends LitElement {
 
   @state() startingHole = 10;
 
+  @state() touchStart = 0;
+
+  @state() touchStartRef = 0;
+
   @state() course = null;
 
   @state() allSubs = new Subscription();
@@ -62,6 +66,9 @@ export class GolfDay extends LitElement {
       table td {
         padding: 0.3rem 0.6rem;
         width: 98%;
+      }
+      #p1 {
+        user-select: none;
       }
     `,
   ];
@@ -105,6 +112,37 @@ export class GolfDay extends LitElement {
     setTimeout(() => {
       storeSvc.day$.next(theDay);
     }, 50);
+
+    this.p1Ele.addEventListener(
+      'touchstart',
+      () => {
+        this.checkIfLongPress();
+      },
+      { passive: true }
+    );
+
+    this.p1Ele.addEventListener(
+      'touchend',
+      () => {
+        this.touchStart = 0;
+        globalThis.clearInterval(this.touchStartRef);
+      },
+      { passive: true }
+    );
+  }
+
+  checkIfLongPress() {
+    this.touchStartRef = setInterval(() => {
+      console.log('this.touchStartRef');
+
+      if (this.touchStart > 8) {
+        console.log('IS-LONG-PRESS');
+        this.p1Ele.style.color = 'red';
+        this.touchStart = 0;
+        globalThis.clearInterval(this.touchStartRef);
+      }
+      this.touchStart += 1;
+    }, 250) as unknown as number;
   }
 
   // onDestroy
@@ -219,19 +257,6 @@ export class GolfDay extends LitElement {
     return this.course[`h${holeNumber}`]?.par || '';
   }
 
-  doIt() {
-    if (this.clickTimeNow) {
-      const aaa = Date.now() - this.clickTimeNow;
-      if (aaa < 333) {
-        this.p1Ele.style.color = 'red';
-        console.log('teamRoster', this.teamRoster);
-      }
-      this.clickTimeNow = 0;
-    } else {
-      this.clickTimeNow = Date.now();
-    }
-  }
-
   render() {
     return html`
       <article>
@@ -240,8 +265,8 @@ export class GolfDay extends LitElement {
             <td>Hole (Par)</td>
             <td style="color: blue; font-weight: bold;" colspan="2">
               ${this.team} <br />
-              <span id="p1" @click="${() => this.doIt()}">Player1</span> &nbsp;
-              Player2
+              <span id="p1">Player1</span>
+              &nbsp; Player2
             </td>
             <td colspan="2">
               ${this.teamOther} <br />
