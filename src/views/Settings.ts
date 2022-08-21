@@ -73,15 +73,20 @@ export class Settings extends LitElement {
     await storeSvc.checkSvcWorkerOnServer();
 
     await new Promise(resolve => setTimeout(() => resolve(''), 2500));
-    this.checkUpdatesBtnEle.disabled = false;
-    this.checkUpdatesBtnEle.textContent = this.updateBtnText;
+    if (this.checkUpdatesBtnEle) {
+      this.checkUpdatesBtnEle.disabled = false;
+      this.checkUpdatesBtnEle.textContent = this.updateBtnText;
+    }
   }
 
   async applyUpdate() {
+    storeSvc.bannerMessage$.next({
+      type: 'app-installing',
+      text: 'Updating now...',
+    });
+
     const swReg = await navigator.serviceWorker.getRegistration();
     swReg?.waiting.postMessage({ type: 'SKIP_WAITING' });
-
-    storeSvc.bannerMessage$.next({});
 
     if (globalThis.ApplePaySession) {
       await new Promise(resolve => setTimeout(() => resolve(''), 777));

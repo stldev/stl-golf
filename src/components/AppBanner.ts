@@ -1,4 +1,3 @@
-import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
@@ -43,7 +42,6 @@ export class AppBanner extends LitElement {
     this.created();
   }
 
-  // onDestroy
   disconnectedCallback() {
     this.allSubs.unsubscribe();
     if (super.disconnectedCallback) super.disconnectedCallback();
@@ -57,10 +55,6 @@ export class AppBanner extends LitElement {
     });
 
     this.allSubs.add(sub1);
-  }
-
-  private goTo(path: string) {
-    Router.go(path);
   }
 
   render() {
