@@ -69,6 +69,7 @@ export class GolfDay extends LitElement {
       }
       #p1 {
         user-select: none;
+        -webkit-touch-callout: none;
       }
     `,
   ];
@@ -107,7 +108,6 @@ export class GolfDay extends LitElement {
   }
 
   protected firstUpdated() {
-    document.body.style.userSelect = 'none';
     const theDay = new Date(`${this.day}T12:00:00.000Z`).toLocaleDateString();
     // don't like this, but DISCONNECTED (from other component) is fired AFTER this components startup hooks
     setTimeout(() => {
@@ -116,7 +116,8 @@ export class GolfDay extends LitElement {
 
     this.p1Ele.addEventListener(
       'touchstart',
-      () => {
+      evt => {
+        evt.preventDefault();
         this.checkIfLongPress();
       },
       { passive: true }
@@ -148,7 +149,6 @@ export class GolfDay extends LitElement {
 
   // onDestroy
   disconnectedCallback() {
-    document.body.style.userSelect = 'auto';
     storeSvc.day$.next('');
     storeSvc.errors$.next('');
     this.allSubs.unsubscribe();
