@@ -108,7 +108,10 @@ export class Settings extends LitElement {
       <main>
         <header>
           ${this.newUpdateAvailable
-            ? html`<button @click="${() => this.applyUpdate()}">
+            ? html`<button
+                style="margin-top: 3rem;"
+                @click="${() => this.applyUpdate()}"
+              >
                 APPLY UPDATE
               </button>`
             : ''}

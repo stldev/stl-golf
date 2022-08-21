@@ -27,7 +27,10 @@ export class AppBanner extends LitElement {
     mvpCss,
     css`
       header {
-        margin-top: 2.5vh;
+        position: fixed;
+        top: 4vh;
+        left: 0;
+        width: 100%;
         background-color: greenyellow;
         padding: 1rem;
         font-weight: bold;
