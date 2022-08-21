@@ -94,8 +94,7 @@ export class PlayerDialog extends LitElement {
     this.open = false;
   }
 
-  doIt(nameShort: string) {
-    console.log('currentPlayerSelected', this.currentPlayerSelected);
+  setPlayer(nameShort: string) {
     const team = localStorage.getItem('woodchopper-team');
     const dbUrl = `/${team}/${this.day}`;
     const payload = {};
@@ -120,7 +119,7 @@ export class PlayerDialog extends LitElement {
           tr =>
             html`
               <section>
-                <article @click="${() => this.doIt(tr.info.nameShort)}">
+                <article @click="${() => this.setPlayer(tr.info.nameShort)}">
                   <table style="border: 5px solid black">
                     <tr>
                       <td style="text-align:center;" colspan="2">
