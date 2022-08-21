@@ -8,7 +8,7 @@ import { mvpCss } from '../styles-3rdParty';
 
 @customElement('rbb-settings')
 export class Settings extends LitElement {
-  @query('#CheckUpdatesBtn') updateBtnEle: HTMLButtonElement;
+  @query('#CheckUpdatesBtn') checkUpdatesBtnEle: HTMLButtonElement;
 
   @state() updateBtnText = 'Check for updates';
 
@@ -66,15 +66,15 @@ export class Settings extends LitElement {
   }
 
   async checkForUpdates() {
-    this.updateBtnEle.disabled = true;
-    this.updateBtnEle.textContent = 'Checking...';
+    this.checkUpdatesBtnEle.disabled = true;
+    this.checkUpdatesBtnEle.textContent = 'Checking...';
     // const swReg = await navigator.serviceWorker.getRegistration();
     // console.log('checkForUpdates-swReg', swReg);
     await storeSvc.checkSvcWorkerOnServer();
 
     await new Promise(resolve => setTimeout(() => resolve(''), 2500));
-    this.updateBtnEle.disabled = false;
-    this.updateBtnEle.textContent = this.updateBtnText;
+    this.checkUpdatesBtnEle.disabled = false;
+    this.checkUpdatesBtnEle.textContent = this.updateBtnText;
   }
 
   async applyUpdate() {
