@@ -51,6 +51,7 @@ class StoreService {
         const visibilityStateLog = [
           `${timestamp}-visibilityState-${document.visibilityState}`,
         ];
+        this.checkSvcWorkerOnServer();
         this.visibilityState$.next(visibilityStateLog);
       },
       false
