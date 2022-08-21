@@ -51,7 +51,7 @@ export const mvpCss = css`
   }
 
   :host {
-    background: var(--color-bg);
+    /* background: var(--color-bg); */
     color: var(--color-text);
     font-family: var(--font-family);
     line-height: var(--line-height);

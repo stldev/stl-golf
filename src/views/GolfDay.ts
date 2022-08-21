@@ -98,8 +98,13 @@ export class GolfDay extends LitElement {
       }
       .p1,
       .p2 {
-        font-size: large;
+        font-size: larger;
         font-weight: bold;
+      }
+      #MyTeam .p1,
+      #MyTeam .p2 {
+        border: 1px solid blue;
+        padding: 0.25rem;
       }
     `,
   ];
@@ -153,28 +158,35 @@ export class GolfDay extends LitElement {
       storeSvc.day$.next(theDay);
     }, 50);
 
-    this.myTeamP1Ele.addEventListener(
-      'touchstart',
-      () => this.checkIfLongPress('p1'),
-      { passive: true }
-    );
-    this.myTeamP2Ele.addEventListener(
-      'touchstart',
-      () => this.checkIfLongPress('p2'),
-      { passive: true }
-    );
+    const epoch = new Date(`${this.day}T23:59:00.000Z`).getTime();
+    const cutoffTimeInFuture = new Date(epoch + 3600000 * 4).getTime();
+    // this means that at about 11pm the day of golf the hole dropdowns are no longer changable
+    const isDisabledFuture = Date.now() > cutoffTimeInFuture;
 
-    this.myTeamP1Ele.addEventListener('touchend', evt => {
-      evt.preventDefault();
-      this.touchStart = 0;
-      globalThis.clearInterval(this.touchStartRef);
-    });
+    if (!isDisabledFuture) {
+      this.myTeamP1Ele.addEventListener(
+        'touchstart',
+        () => this.checkIfLongPress('p1'),
+        { passive: true }
+      );
+      this.myTeamP2Ele.addEventListener(
+        'touchstart',
+        () => this.checkIfLongPress('p2'),
+        { passive: true }
+      );
 
-    this.myTeamP2Ele.addEventListener('touchend', evt => {
-      evt.preventDefault();
-      this.touchStart = 0;
-      globalThis.clearInterval(this.touchStartRef);
-    });
+      this.myTeamP1Ele.addEventListener('touchend', evt => {
+        evt.preventDefault();
+        this.touchStart = 0;
+        globalThis.clearInterval(this.touchStartRef);
+      });
+
+      this.myTeamP2Ele.addEventListener('touchend', evt => {
+        evt.preventDefault();
+        this.touchStart = 0;
+        globalThis.clearInterval(this.touchStartRef);
+      });
+    }
   }
 
   checkIfLongPress(player: string) {
