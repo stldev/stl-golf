@@ -68,21 +68,13 @@ export class Settings extends LitElement {
   async checkForUpdates() {
     this.updateBtnEle.disabled = true;
     this.updateBtnEle.textContent = 'Checking...';
-    const swReg = await navigator.serviceWorker.getRegistration();
-    console.log('checkForUpdates-swReg', swReg);
-    if (swReg?.waiting) {
-      storeSvc.bannerMessage$.next({
-        type: 'app-update',
-        text: 'New update available!',
-        link: '/settings',
-      });
-      this.updateBtnEle.disabled = false;
-      this.updateBtnEle.textContent = this.updateBtnText;
-    } else {
-      await new Promise(resolve => setTimeout(() => resolve(''), 2500));
-      this.updateBtnEle.disabled = false;
-      this.updateBtnEle.textContent = this.updateBtnText;
-    }
+    // const swReg = await navigator.serviceWorker.getRegistration();
+    // console.log('checkForUpdates-swReg', swReg);
+    await storeSvc.checkSvcWorkerOnServer();
+
+    await new Promise(resolve => setTimeout(() => resolve(''), 2500));
+    this.updateBtnEle.disabled = false;
+    this.updateBtnEle.textContent = this.updateBtnText;
   }
 
   async applyUpdate() {
