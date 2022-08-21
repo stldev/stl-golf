@@ -89,14 +89,14 @@ export class Settings extends LitElement {
     swReg?.waiting.postMessage({ type: 'SKIP_WAITING' });
 
     if (globalThis.ApplePaySession) {
-      await new Promise(resolve => setTimeout(() => resolve(''), 777));
+      await new Promise(resolve => setTimeout(() => resolve(''), 999));
       globalThis.location.reload();
     }
 
     if (!globalThis.ApplePaySession) {
       setTimeout(() => {
         globalThis.location.reload();
-      }, 777);
+      }, 999);
     }
   }
 
