@@ -312,6 +312,11 @@ export class GolfDay extends LitElement {
     return this.course[`h${holeNumber}`]?.par || '';
   }
 
+  openModal(player: string) {
+    (this.playerDialogEle as any).open = true;
+    (this.playerDialogEle as any).currentPlayerSelected = player;
+  }
+
   render() {
     return html`
       <rbb-player-dialog day="${this.day}">
@@ -323,9 +328,13 @@ export class GolfDay extends LitElement {
             <td># (par)</td>
             <td id="MyTeam" colspan="2">
               ${this.team?.toUpperCase()} <br />
-              <span class="p1">p1</span>
+              <span @dblclick="${() => this.openModal('p1')}" class="p1"
+                >p1</span
+              >
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span class="p2">p2</span>
+              <span @dblclick="${() => this.openModal('p2')}" class="p2"
+                >p2</span
+              >
             </td>
             <td id="OtherTeam" colspan="2">
               ${this.teamOther} <br />
