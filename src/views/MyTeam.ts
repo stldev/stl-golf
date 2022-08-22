@@ -66,7 +66,7 @@ export class MyTeam extends LitElement {
     return html`
       <main>
         <header>
-          <h2>My Team</h2>
+          <h2>My Team!</h2>
         </header>
         ${this.teamRoster.map(
           tr =>
