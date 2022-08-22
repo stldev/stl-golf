@@ -18,6 +18,8 @@ export class AppBanner extends LitElement {
 
   @state() msgBgColor = 'greenyellow';
 
+  @state() msgBgColorDefault = 'greenyellow';
+
   @state() msgLink = '';
 
   static styles = [
@@ -49,7 +51,7 @@ export class AppBanner extends LitElement {
       this.msgType = bannerMessage?.type || '';
       this.msgText = bannerMessage?.text || '';
       this.msgLink = bannerMessage?.link || '';
-      this.msgBgColor = bannerMessage?.bgColor || this.msgBgColor;
+      this.msgBgColor = bannerMessage?.bgColor || this.msgBgColorDefault;
     });
 
     this.allSubs.add(sub1);
