@@ -12,11 +12,11 @@ export class AppBanner extends LitElement {
 
   @state() dayDisplay = '';
 
-  @state() hasDbConn = true;
-
   @state() msgType = '';
 
   @state() msgText = '';
+
+  @state() msgBgColor = 'greenyellow';
 
   @state() msgLink = '';
 
@@ -28,7 +28,6 @@ export class AppBanner extends LitElement {
         top: 4vh;
         left: 0;
         width: 100%;
-        background-color: greenyellow;
         padding: 1rem;
         font-weight: bold;
       }
@@ -50,6 +49,7 @@ export class AppBanner extends LitElement {
       this.msgType = bannerMessage?.type || '';
       this.msgText = bannerMessage?.text || '';
       this.msgLink = bannerMessage?.link || '';
+      this.msgBgColor = bannerMessage?.bgColor || this.msgBgColor;
     });
 
     this.allSubs.add(sub1);
@@ -58,7 +58,7 @@ export class AppBanner extends LitElement {
   render() {
     if (this.msgType)
       return html`
-        <header>
+        <header style="background-color:${this.msgBgColor}">
           ${this.msgText}
           ${this.msgLink ? html`<a href="${this.msgLink}">Go Here!</a>` : ''}
         </header>

@@ -16,8 +16,6 @@ export class AppHeader extends LitElement {
 
   @state() dayDisplay = '';
 
-  @state() hasDbConn = true;
-
   @query('#mySidenav') _sideNav: HTMLDivElement;
 
   @query('#backdrop') _backDrop: HTMLDivElement;
@@ -158,13 +156,8 @@ export class AppHeader extends LitElement {
       this.dayDisplay = theDay || '';
     });
 
-    const sub4 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
-      this.hasDbConn = hasDbConn;
-    });
-
     this.allSubs.add(sub1);
     this.allSubs.add(sub2);
-    this.allSubs.add(sub4);
   }
 
   private openNav() {
@@ -234,7 +227,6 @@ export class AppHeader extends LitElement {
         <span @click="${this.openNav}" class="mobile-nav-open-icon"
           >&#9776;</span
         >
-        ${this.hasDbConn ? '' : html`<strong style="color:red;">✖</strong>`}
         ${this.dayDisplay} &nbsp; ${this.curTeamName} 🌲 &#x1FA93; &nbsp;
       </nav>
     `;

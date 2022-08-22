@@ -9,8 +9,6 @@ class StoreService {
     schedule: true,
   };
 
-  public hasDbConn$ = new ReplaySubject<boolean>(1);
-
   public course$ = new ReplaySubject<any>(1);
 
   public teamRoster$ = new ReplaySubject<any>(1);
@@ -38,20 +36,13 @@ class StoreService {
     this.authHandler(team);
     setTimeout(() => {
       this.getConnectionState();
-    }, 999);
+    }, 2500);
+  }
 
-    document.addEventListener(
-      'visibilitychange',
-      () => {
-        const timestamp = new Date().toLocaleString();
-        const visibilityStateLog = [
-          `${timestamp}-visibilityState-${document.visibilityState}`,
-        ];
-        this.checkSvcWorkerOnServer();
-        this.visibilityState$.next(visibilityStateLog);
-      },
-      false
-    );
+  setPristine() {
+    this.pristine.course = true;
+    this.pristine.roster = true;
+    this.pristine.schedule = true;
   }
 
   public async checkSvcWorkerOnServer() {
@@ -75,17 +66,15 @@ class StoreService {
     const connectedRef = ref(getDatabase(), '.info/connected');
     onValue(connectedRef, snap => {
       if (snap.val() === true) {
-        this.hasDbConn$.next(true);
+        this.bannerMessage$.next({});
       } else {
-        this.hasDbConn$.next(false);
+        this.bannerMessage$.next({
+          type: 'db-conn',
+          text: 'Trouble connecting to server.',
+          bgColor: 'red',
+        });
       }
     });
-  }
-
-  setPristine() {
-    this.pristine.course = true;
-    this.pristine.roster = true;
-    this.pristine.schedule = true;
   }
 
   authHandler(team: string) {

@@ -12,8 +12,6 @@ export class Settings extends LitElement {
 
   @state() updateBtnText = 'Check for updates';
 
-  @state() hasDbConn = true;
-
   @state() newUpdateAvailable = false;
 
   @state() visibilityState = [];
@@ -43,10 +41,6 @@ export class Settings extends LitElement {
   }
 
   created() {
-    const sub1 = storeSvc.hasDbConn$.subscribe(hasDbConn => {
-      this.hasDbConn = hasDbConn;
-    });
-
     const sub2 = storeSvc.visibilityState$.subscribe(visibilityState => {
       this.visibilityState = visibilityState;
     });
@@ -55,7 +49,6 @@ export class Settings extends LitElement {
       this.newUpdateAvailable = bannerMessage?.type === 'app-update';
     });
 
-    this.allSubs.add(sub1);
     this.allSubs.add(sub2);
     this.allSubs.add(sub3);
   }
@@ -123,10 +116,6 @@ export class Settings extends LitElement {
               >
                 ${this.updateBtnText}
               </button>`}
-        </section>
-        <br />
-        <section>
-          <article>Is connected? ${this.hasDbConn}</article>
         </section>
         <br />
         <section>
