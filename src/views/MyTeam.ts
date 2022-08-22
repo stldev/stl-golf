@@ -41,6 +41,7 @@ export class MyTeam extends LitElement {
   created() {
     const team = localStorage.getItem('woodchopper-team');
     storeSvc.getRoster(team);
+    storeSvc.getAllDaysForTeam(team);
   }
 
   disconnectedCallback() {
@@ -57,7 +58,34 @@ export class MyTeam extends LitElement {
 
       this.teamRoster = teamRoster;
     });
+
+    const sub2 = storeSvc.schedule$.subscribe(s => {
+      Object.entries(s).reduce((acc, [day, pairs]) => {
+        if (day === '2022-07-27') {
+          console.log('IS_FRONT', (pairs as any).isFront);
+        }
+        return 1;
+      }, 0);
+    });
+
+    const sub3 = storeSvc.allDaysForTeam$.subscribe(ad => {
+      Object.entries(ad).reduce((acc, [theDay, info]) => {
+        if ((info as any).p1 === 'RB') {
+          const holeScores = Object.values(info)
+            .map(player => player.p1)
+            .filter(Boolean);
+
+          console.log('theDay', theDay);
+          console.log('holeScores', holeScores);
+        }
+        acc.push({ id: 1 });
+        return acc;
+      }, []);
+    });
+
     this.allSubs.add(sub1);
+    this.allSubs.add(sub2);
+    this.allSubs.add(sub3);
 
     if (super.connectedCallback) super.connectedCallback();
   }

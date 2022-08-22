@@ -25,6 +25,8 @@ class StoreService {
 
   public myTeamToday$ = new ReplaySubject<any>(1);
 
+  public allDaysForTeam$ = new ReplaySubject<any>(1);
+
   public otherTeamToday$ = new ReplaySubject<any>(1);
 
   public allTeamsToday$ = new ReplaySubject<any>(1);
@@ -141,6 +143,14 @@ class StoreService {
     const myTeamTodayDb = ref(getDatabase(), `/${team}/${day}`);
     onValue(myTeamTodayDb, snapshot => {
       this.myTeamToday$.next(snapshot.val() || {});
+    });
+  }
+
+  getAllDaysForTeam(team: string) {
+    this.allDaysForTeam$.next({});
+    const allDaysForTeamDb = ref(getDatabase(), `/${team}`);
+    onValue(allDaysForTeamDb, snapshot => {
+      this.allDaysForTeam$.next(snapshot.val() || {});
     });
   }
 
