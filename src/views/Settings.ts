@@ -73,6 +73,7 @@ export class Settings extends LitElement {
   }
 
   async applyUpdate() {
+    localStorage.setItem('woodchopper-last-update', Date.now().toString());
     storeSvc.bannerMessage$.next({
       type: 'app-installing',
       text: 'Updating now...',

@@ -48,18 +48,27 @@ class StoreService {
   }
 
   public async checkSvcWorkerOnServer() {
-    const swReg = await navigator.serviceWorker.getRegistration();
-    if (swReg) {
-      if (swReg.waiting) {
-        console.log('swReg.waiting=TRUE', swReg);
-        this.bannerMessage$.next({
-          type: 'app-update',
-          text: 'New update available!',
-          link: '/settings',
-        });
-      } else {
-        console.log('swReg.update()');
-        swReg.update();
+    const ONE_MINUTE_MILLI = 60000;
+    const TIME_TO_WAIT = ONE_MINUTE_MILLI * 2;
+    const lastUpdateTimeString =
+      localStorage.getItem('woodchopper-last-update') || '0';
+    const lastUpdateTime = Number(lastUpdateTimeString);
+
+    if (lastUpdateTime + TIME_TO_WAIT < Date.now()) {
+      console.log('we can update');
+      const swReg = await navigator.serviceWorker.getRegistration();
+      if (swReg) {
+        if (swReg.waiting) {
+          console.log('swReg.waiting=TRUE', swReg);
+          this.bannerMessage$.next({
+            type: 'app-update',
+            text: 'New update available!',
+            link: '/settings',
+          });
+        } else {
+          console.log('swReg.update()');
+          swReg.update();
+        }
       }
     }
   }
