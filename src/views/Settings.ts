@@ -106,7 +106,7 @@ export class Settings extends LitElement {
                 APPLY UPDATE
               </button>`
             : ''}
-          <h2>Settings</h2>
+          <h2>Settings!</h2>
         </header>
         <section>
           ${this.newUpdateAvailable
