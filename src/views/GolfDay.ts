@@ -313,6 +313,12 @@ export class GolfDay extends LitElement {
   }
 
   openModal(player: string) {
+    const epoch = new Date(`${this.day}T23:59:00.000Z`).getTime();
+    const cutoffTimeInFuture = new Date(epoch + 3600000 * 4).getTime();
+
+    // this means that at about 11pm the day of golf the hole dropdowns are no longer changable
+    const isDisabledFuture = Date.now() > cutoffTimeInFuture;
+    if (isDisabledFuture) return;
     (this.playerDialogEle as any).open = true;
     (this.playerDialogEle as any).currentPlayerSelected = player;
   }
