@@ -128,8 +128,11 @@ export class PlayerDialog extends LitElement {
                       </td>
                     </tr>
                     <tr>
-                      <td>Handicap (current):</td>
-                      <td>${tr.info['handicap-now']}</td>
+                      <td>Handicap (start/now):</td>
+                      <td>
+                        ${tr.info['handicap-start']} /
+                        ${tr.info['handicap-now']}
+                      </td>
                     </tr>
                   </table>
                 </article>
