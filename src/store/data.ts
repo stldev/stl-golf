@@ -47,6 +47,10 @@ class StoreService {
     this.pristine.schedule = true;
   }
 
+  setPristineSchedule() {
+    this.pristine.schedule = true;
+  }
+
   public async checkSvcWorkerOnServer() {
     const ONE_MINUTE_MILLI = 60000;
     const TIME_TO_WAIT = ONE_MINUTE_MILLI * 2;
@@ -134,9 +138,9 @@ class StoreService {
     }
   }
 
-  getSchedule(team: string) {
+  getSchedule(team: string, year?: string) {
     if (this.pristine.schedule && team) {
-      const thisYear = new Date().getFullYear();
+      const thisYear = year || new Date().getFullYear();
 
       const scheduleDb = ref(getDatabase(), `/schedules/${thisYear}`);
       onValue(scheduleDb, snapshot => {

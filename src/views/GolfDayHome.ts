@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Router } from '@vaadin/router';
 import { LitElement, html, css } from 'lit';
-import { customElement, queryAll, state } from 'lit/decorators.js';
+import { customElement, queryAll, query, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
 import { storeSvc } from '../store/data';
 import { mvpCss } from '../styles-3rdParty';
@@ -15,6 +15,8 @@ export class GolfDayHome extends LitElement {
   @state() allSubs = new Subscription();
 
   @queryAll('header button') tabs: any[];
+
+  @query('.tab-active') activeTab: any;
 
   static styles = [
     mvpCss,
@@ -41,6 +43,10 @@ export class GolfDayHome extends LitElement {
         animation-iteration-count: infinite;
       }
 
+      .tab-active {
+        border: 5px black solid;
+      }
+
       @keyframes rain {
         from {
           transform: rotate(105deg) translateX(0);
@@ -64,9 +70,6 @@ export class GolfDayHome extends LitElement {
         line-height: var(--line-height);
         margin: 0.5rem 0px;
         padding: 1rem 2rem;
-      }
-      .tab-active {
-        border: 5px black solid;
       }
     `,
   ];
@@ -160,10 +163,27 @@ export class GolfDayHome extends LitElement {
       this.pairingsByState = this.pairings.filter(f => f.state === itemState);
   }
 
+  private onSelectChange(evt: any) {
+    const yearToUse = evt.target.value;
+    const team = localStorage.getItem('woodchopper-team');
+    storeSvc.setPristineSchedule();
+    storeSvc.getSchedule(team, yearToUse);
+    this.activeTab.click();
+  }
+
   render() {
     return html`
       <article>
         <header>
+          <br />
+          <select
+            @change="${e => this.onSelectChange(e)}"
+            style="text-align:center; display:inline-block;"
+          >
+            <option selected value="2023">2023</option>
+            <option value="2022">2022</option>
+          </select>
+          <br />
           <button
             class="tab-active"
             @click="${e => this.filterDays(e, 'current')}"
