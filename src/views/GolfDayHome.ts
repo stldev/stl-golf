@@ -91,6 +91,8 @@ export class GolfDayHome extends LitElement {
     const NOW_MINUS_HOURS = Date.now() - ONE_HOUR_MILLI * 24;
     // Keep "current" even on the same day, don't want it to be in the "past"
     const modifiedEpoch = new Date(NOW_MINUS_HOURS).getTime();
+    const curYear = new Date().getFullYear().toString();
+    this.onSelectChange({ target: { value: curYear } });
 
     const sub1 = storeSvc.schedule$.subscribe(s => {
       const pairings = Object.entries(s).reduce((acc, [day, pairs]) => {
@@ -168,7 +170,7 @@ export class GolfDayHome extends LitElement {
     const team = localStorage.getItem('woodchopper-team');
     storeSvc.setPristineSchedule();
     storeSvc.getSchedule(team, yearToUse);
-    this.activeTab.click();
+    this.activeTab?.click();
   }
 
   render() {
